@@ -2,36 +2,51 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BukuController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\PDFController;
 
-// Halaman awal langsung form login
-Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::middleware('guest')->group(function () {
+    Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/', [LoginController::class, 'login']);
 
-Auth::routes();
+    Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+    Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
-//route semua bisa akses
-Route::get('/', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-
-// ini route wajib login
-Route::middleware(['auth'])->group(function () {
-    Route::get('/Dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-
-    Route::get('/Buku', [App\Http\Controllers\BukuController::class, 'index'])->name('buku.index');
-    Route::get('/Buku/create', [App\Http\Controllers\BukuController::class, 'create'])->name('buku.create');
-    Route::post('/Buku', [App\Http\Controllers\BukuController::class, 'store'])->name('buku.store');
-    Route::get('/Buku/{id}/edit', [App\Http\Controllers\BukuController::class, 'edit'])->name('buku.edit');
-    Route::put('/Buku/{id}', [App\Http\Controllers\BukuController::class, 'update'])->name('buku.update');
-    Route::delete('/Buku/{id}', [App\Http\Controllers\BukuController::class, 'destroy'])->name('buku.destroy');
-    
-
-
-    Route::get('/Kategori', [App\Http\Controllers\KategoriController::class, 'index'])->name('kategori.index');
-    Route::get('/Kategori/create', [App\Http\Controllers\KategoriController::class, 'create'])->name('kategori.create');
-    Route::post('/Kategori', [App\Http\Controllers\KategoriController::class, 'store'])->name('kategori.store');
-    Route::get('/Kategori/{id}/edit', [App\Http\Controllers\KategoriController::class, 'edit'])->name('kategori.edit');
-    Route::put('/Kategori/{id}', [App\Http\Controllers\KategoriController::class, 'update'])->name('kategori.update');
-    Route::delete('/Kategori/{id}', [App\Http\Controllers\KategoriController::class, 'destroy'])->name('kategori.destroy');
-
-    Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+    Route::get('/otp-verify', function () {
+        return view('auth.otp');
+    })->name('otp.view');
+    Route::post('/otp-verify', [GoogleController::class, 'verifyOtp'])->name('otp.verify');
 });
 
+Auth::routes(['login' => false]);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/Dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::prefix('Buku')->name('buku.')->group(function () {
+        Route::get('/', [BukuController::class, 'index'])->name('index');
+        Route::get('/create', [BukuController::class, 'create'])->name('create');
+        Route::post('/', [BukuController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [BukuController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [BukuController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BukuController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('Kategori')->name('kategori.')->group(function () {
+        Route::get('/', [KategoriController::class, 'index'])->name('index');
+        Route::get('/create', [KategoriController::class, 'create'])->name('create');
+        Route::post('/', [KategoriController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [KategoriController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [KategoriController::class, 'update'])->name('update');
+        Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::get('/generate-sertifikat', [PDFController::class, 'generateSertifikat'])->name('pdf.sertifikat');
+    Route::get('/generate-surat', [PDFController::class, 'generateSurat'])->name('pdf.surat');
+
+    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+});

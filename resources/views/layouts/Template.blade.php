@@ -245,6 +245,36 @@
       </li>
 
 
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-pdf-gen" aria-expanded="false" aria-controls="ui-pdf-gen">
+        <span class="menu-title">Generate Dokumen</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-file-pdf menu-icon text-danger"></i>
+      </a>
+      <div class="collapse" id="ui-pdf-gen">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <h6 class="ps-4 text-muted small mt-2">Sertifikat</h6> </li>
+          <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/generate-sertifikat') }}" target="_blank">Lihat Sertifikat</a>
+          </li>
+          <!-- <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/generate-sertifikat?action=download') }}">Unduh Sertifikat</a>
+          </li> -->
+          
+          <div class="dropdown-divider"></div>
+
+          <li class="nav-item"> <h6 class="ps-4 text-muted small mt-2">Surat Undangan</h6> </li>
+          <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/generate-surat') }}" target="_blank">Lihat Surat</a>
+          </li>
+          <!-- <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/generate-surat?action=download') }}">Unduh Surat</a>
+          </li> -->
+        </ul>
+      </div>
+    </li> 
+
+
         </ul>
       </nav>
       <!-- partial -->

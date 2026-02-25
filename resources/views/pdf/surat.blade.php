@@ -12,7 +12,7 @@
 </head>
 <body>
     <div class="kop-surat">
-        <h2>UNIVERSITAS TEKNOLOGI PURPLE</h2>
+        <h2>UNIVERSITAS TEKNOLOGI PURPLE 2</h2>
         <p>Jl. Jenderal Sudirman No. 45, Jakarta Selatan<br>Telp: (021) 123456 | Website: www.purple-univ.ac.id</p>
     </div>
     <div class="isi-surat">

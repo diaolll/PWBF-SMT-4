@@ -24,7 +24,6 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
-            // 1. Cari atau buat user
             $user = User::updateOrCreate([
                 'email' => $googleUser->getEmail(),
             ], [
@@ -33,28 +32,20 @@ class GoogleController extends Controller
                 'password' => Hash::make(Str::random(24)), 
             ]);
 
-            // 2. Generate OTP
             $otp = strtoupper(Str::random(6));
-
-            // 3. SIMPAN KE DATABASE DULU (Wajib sebelum kirim email)
-            // Ini biar kalau email gagal, OTP tetep masuk ke DB dan Log
             $user->otp = $otp;
             $user->save(); 
 
-            // 4. Simpan ID ke session
             session(['otp_user_id' => $user->id]);
 
-            // 5. Kirim Email (Pake try-catch biar kalau gagal nggak bikin aplikasi stop)
             try {
                 Mail::raw("Kode OTP Anda: $otp", function ($message) use ($user) {
                     $message->to($user->email)->subject('Login Verification Code');
                 });
             } catch (\Exception $e) {
                 Log::error("Gagal kirim email ke {$user->email}: " . $e->getMessage());
-                // Tetap lanjut ke halaman OTP meskipun email gagal
             }
 
-            // 6. Tulis ke Log (Backup utama kamu!)
             Log::info("OTP TERBARU untuk {$user->email}: {$otp}");
 
             return redirect()->route('otp.view');

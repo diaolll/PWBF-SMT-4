@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\BarangController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
@@ -43,6 +44,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/edit', [KategoriController::class, 'edit'])->name('edit');
         Route::put('/{id}', [KategoriController::class, 'update'])->name('update');
         Route::delete('/{id}', [KategoriController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('barang')->name('barang.')->group(function () {
+        Route::get('/', [BarangController::class, 'index'])->name('index');
+        Route::post('/', [BarangController::class, 'store'])->name('store');
+        Route::delete('/{id}', [BarangController::class, 'destroy'])->name('destroy');
+        Route::post('/generate-pdf', [BarangController::class, 'generatePDF'])->name('pdf'); // 
+
+        Route::get('/{id}/edit', [BarangController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [BarangController::class, 'update'])->name('update');
+
+        
     });
 
     Route::get('/generate-sertifikat', [PDFController::class, 'generateSertifikat'])->name('pdf.sertifikat');

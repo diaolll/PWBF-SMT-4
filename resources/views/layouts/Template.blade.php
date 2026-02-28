@@ -274,7 +274,13 @@
           </li>
         </ul>
       </div>
-    </li> 
+    </li>
+
+     <li class="nav-item">
+        <a class="nav-link" href="{{ url('/barang') }}">
+          <span class="menu-title">Barang</span>
+      <i class="mdi mdi-package-variant-closed menu-icon"></i>        </a>
+      </li>
 
 
         </ul>

@@ -14,7 +14,6 @@ class BarangController extends Controller
      */
     public function index()
     {
-        // Mengambil semua data barang, urutkan dari yang terbaru
         $barangs = Barang::orderBy('timestamp', 'desc')->get();
         return view('barang.index', compact('barangs'));
     }
@@ -29,15 +28,18 @@ class BarangController extends Controller
             'harga' => 'required|numeric',
         ]);
 
-        // Kita cukup insert nama dan harga. 
-        // id_barang akan diisi otomatis oleh TRIGGER di database.
-        Barang::create([
-            'nama' => $request->nama,
-            'harga' => $request->harga,
-            'timestamp' => now(),
-        ]);
+        try {
+            Barang::create([
+                'nama' => $request->nama,
+                'harga' => $request->harga,
+                'timestamp' => now(),
+            ]);
 
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan!');
+            // Notifikasi Sukses Simpan
+            return redirect()->route('barang.index')->with('success', 'Barang baru berhasil disimpan ke database!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menyimpan barang: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -59,12 +61,17 @@ class BarangController extends Controller
             'harga' => 'required|numeric',
         ]);
 
-        Barang::where('id_barang', $id)->update([
-            'nama' => $request->nama,
-            'harga' => $request->harga,
-        ]);
+        try {
+            Barang::where('id_barang', $id)->update([
+                'nama' => $request->nama,
+                'harga' => $request->harga,
+            ]);
 
-        return redirect()->route('barang.index')->with('success', 'Data berhasil diperbarui!');
+            // Notifikasi Sukses Update
+            return redirect()->route('barang.index')->with('success', 'Data barang ' . $id . ' berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal memperbarui data!');
+        }
     }
 
     /**
@@ -72,37 +79,36 @@ class BarangController extends Controller
      */
     public function destroy($id)
     {
-        Barang::where('id_barang', $id)->delete();
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus!');
+        try {
+            Barang::where('id_barang', $id)->delete();
+            
+            // Notifikasi Sukses Hapus
+            return redirect()->route('barang.index')->with('success', 'Barang ' . $id . ' telah dihapus secara permanen.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus barang!');
+        }
     }
 
     /**
-     * Fungsi Utama: Generate PDF Label TnJ 108
+     * Generate PDF Label TnJ 108
      */
     public function generatePDF(Request $request)
     {
-        // 1. Ambil data dari form
-        $ids = $request->input('ids', []); // Array ID yang dicentang
-        $startX = (int) $request->input('x', 1); // Kolom awal (1-5)
-        $startY = (int) $request->input('y', 1); // Baris awal (1-8)
+        $ids = $request->input('ids', []);
+        $startX = (int) $request->input('x', 1);
+        $startY = (int) $request->input('y', 1);
 
-        // 2. Validasi jika tidak ada barang yang dipilih
+        // Notifikasi Error jika belum pilih barang (Muncul di Index)
         if (empty($ids)) {
-            return redirect()->back()->with('error', 'Silahkan pilih minimal satu barang untuk dicetak!');
+            return redirect()->back()->with('error', 'Pilih minimal satu barang yang ingin dicetak!');
         }
 
-        // 3. Ambil data barang berdasarkan ID yang dipilih
         $selectedBarang = Barang::whereIn('id_barang', $ids)->get();
+        $skipCount = (($startY - 1) * 5) + ($startX - 1);
         
-        // 4. Hitung Skip Count (Kotak Kosong)
-        // Rumus: ((Baris - 1) * Jumlah_Kolom) + (Kolom - 1)
-        // TnJ 108 memiliki 5 kolom
-        $skipCount = (($startY - 1) * 5) + ($startX - 1); //
-        // 5. Generate PDF menggunakan view 'barang.pdf'
         $pdf = Pdf::loadView('barang.pdf', compact('selectedBarang', 'skipCount'))
                   ->setPaper('a4', 'portrait');
 
-        // 6. Stream file ke browser
         return $pdf->stream('Tag-Harga-TnJ108.pdf');
     }
 }

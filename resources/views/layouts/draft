@@ -78,11 +78,11 @@
                 <span class="availability-status online"></span>
               </div>
 
-              <div class="nav-profile-text">
-                <p class="mb-1 text-black">
-                  {{ Auth::check() ? Auth::user()->name : 'Guest' }}
-                </p>
-              </div>
+                      <div class="nav-profile-text">
+            <p class="mb-1 text-black">
+              {{ Auth::check() ? Auth::user()->name : 'Guest' }}
+            </p>
+          </div>
             </a>
 
             <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
@@ -212,100 +212,75 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
 
-          <li class="nav-item nav-profile">
-            <a href="#" class="nav-link">
-              <div class="nav-profile-image">
-                <img src="{{ Auth::user()->avatar ?? asset('assets/images/faces/face1.jpg') }}" alt="profile" />
-                <span class="login-status online"></span>
-              </div>
-              <div class="nav-profile-text d-flex flex-column">
-                <span class="font-weight-bold mb-2">
-                  {{ Auth::user()->name }}
-                </span>
-                <span class="text-secondary text-small">
-                  {{ Auth::user()->role ?? 'User' }} </span>
-              </div>
-              <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
-            </a>
-          </li>
-
+                <li class="nav-item nav-profile">
+          <a href="#" class="nav-link">
+            <div class="nav-profile-image">
+              <img src="{{ Auth::user()->avatar ?? asset('assets/images/faces/face1.jpg') }}" alt="profile" />
+              <span class="login-status online"></span>
+            </div>
+            <div class="nav-profile-text d-flex flex-column">
+              <span class="font-weight-bold mb-2">
+                {{ Auth::user()->name }}
+              </span>
+              <span class="text-secondary text-small">
+                {{ Auth::user()->role ?? 'User' }} </span>
+            </div>
+            <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+          </a>
+        </li>
+        
           <li class="nav-item">
-            <a class="nav-link" href="{{ url('/Dashboard') }}">
+        <a class="nav-link" href="{{ url('/Dashboard') }}">
               <span class="menu-title">Dashboard</span>
               <i class="mdi mdi-home menu-icon"></i>
             </a>
           </li>
+          
+            {{-- Menu Master Buku --}}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('/Buku') }}">
+          <span class="menu-title">Data Buku</span>
+          <i class="mdi mdi-book-open-variant menu-icon"></i>
+        </a>
+      </li>
 
-          {{-- Menu Master Buku --}}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url('/Buku') }}">
-              <span class="menu-title">Data Buku</span>
-              <i class="mdi mdi-book-open-variant menu-icon"></i>
-            </a>
+      {{-- Menu Master Kategori --}}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('/Kategori') }}">
+          <span class="menu-title">Kategori Buku</span>
+          <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+        </a>
+      </li>
+
+
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="collapse" href="#ui-pdf-gen" aria-expanded="false" aria-controls="ui-pdf-gen">
+        <span class="menu-title">Generate Dokumen</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-file-pdf menu-icon text-danger"></i>
+      </a>
+      <div class="collapse" id="ui-pdf-gen">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item"> <h6 class="ps-4 text-muted small mt-2">Sertifikat</h6> </li>
+          <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/generate-sertifikat') }}" target="_blank">Lihat Sertifikat</a>
           </li>
+          
+          <div class="dropdown-divider"></div>
 
-          {{-- Menu Master Kategori --}}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url('/Kategori') }}">
-              <span class="menu-title">Kategori Buku</span>
-              <i class="mdi mdi-format-list-bulleted menu-icon"></i>
-            </a>
+          <li class="nav-item"> <h6 class="ps-4 text-muted small mt-2">Surat Undangan</h6> </li>
+          <li class="nav-item"> 
+            <a class="nav-link" href="{{ url('/generate-surat') }}" target="_blank">Lihat Surat</a>
           </li>
+        </ul>
+      </div>
+    </li>
 
-
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#ui-pdf-gen" aria-expanded="false"
-              aria-controls="ui-pdf-gen">
-              <span class="menu-title">Generate Dokumen</span>
-              <i class="menu-arrow"></i>
-              <i class="mdi mdi-file-pdf menu-icon text-danger"></i>
-            </a>
-            <div class="collapse" id="ui-pdf-gen">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <h6 class="ps-4 text-muted small mt-2">Sertifikat</h6>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/generate-sertifikat') }}" target="_blank">Lihat Sertifikat</a>
-                </li>
-
-                <div class="dropdown-divider"></div>
-
-                <li class="nav-item">
-                  <h6 class="ps-4 text-muted small mt-2">Surat Undangan</h6>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/generate-surat') }}" target="_blank">Lihat Surat</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url('/barang') }}">
-              <span class="menu-title">Barang</span>
-              <i class="mdi mdi-package-variant-closed menu-icon"></i> </a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul" aria-expanded="false"
-              aria-controls="ui-modul">
-              <span class="menu-title">Modul 4</span>
-              <i class="menu-arrow"></i>
-              <i class="mdi mdi-table menu-icon"></i>
-            </a>
-
-            <div class="collapse" id="ui-modul">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/modul/table-datatable') }}">Table Datatable</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url('/modul/select-kota') }}">Select Kota</a>
-                </li>
-              </ul>
-            </div>
-          </li>
+     <li class="nav-item">
+        <a class="nav-link" href="{{ url('/barang') }}">
+          <span class="menu-title">Barang</span>
+      <i class="mdi mdi-package-variant-closed menu-icon"></i>        </a>
+      </li>
 
 
         </ul>
@@ -349,15 +324,6 @@
   <!-- Custom js for this page -->
   <script src="assets/js/dashboard.js"></script>
   <!-- End custom js for this page -->
-
-  <!-- Select2 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-  <!-- Select2 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-  @push('scripts')
-  @endpush
 </body>
 
 </html>

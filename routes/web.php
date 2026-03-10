@@ -9,6 +9,8 @@ use App\Http\Controllers\BukuController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\ModulController;
+
 
 Route::middleware('guest')->group(function () {
     Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
@@ -27,6 +29,9 @@ Auth::routes(['login' => false]);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/Dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/modul/table-datatable', [ModulController::class,'tableDatatable']);
+    Route::get('/modul/select-kota', [ModulController::class,'selectKota']);
 
     Route::prefix('Buku')->name('buku.')->group(function () {
         Route::get('/', [BukuController::class, 'index'])->name('index');

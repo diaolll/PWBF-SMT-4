@@ -19,7 +19,7 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 7pt;
-            background-color: #fff9c4; 
+            background-color: #fff; 
             padding: 0;
         }
 

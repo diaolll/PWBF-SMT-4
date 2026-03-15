@@ -7,20 +7,20 @@
     /* 1. PERBAIKAN FORM INPUT & BUTTON (Agar Sejajar & Presisi) */
     .custom-input-group {
         display: flex;
-        align-items: stretch; /* Memaksa tinggi input dan button sama */
+        align-items: stretch;
         width: 100%;
     }
     
     .custom-input-group .form-control {
-        height: 45px !important; /* Kunci tinggi input */
-        border-radius: 4px 0 0 4px !important; /* Rounded hanya di kiri */
+        height: 45px !important;
+        border-radius: 4px 0 0 4px !important;
         border: 1px solid #ebedf2;
     }
 
     .custom-input-group .btn {
-        height: 45px !important; /* Kunci tinggi button sama dengan input */
+        height: 45px !important;
         margin: 0 !important;
-        border-radius: 0 4px 4px 0 !important; /* Rounded hanya di kanan */
+        border-radius: 0 4px 4px 0 !important;
         display: flex;
         align-items: center;
         justify-content: center;

@@ -19,4 +19,9 @@ class ModulController extends Controller
         return view('modul.select-kota');
     }
 
+    public function tabelHtml()
+    {
+        return view('modul.tabel-html');
+    }
+
 }

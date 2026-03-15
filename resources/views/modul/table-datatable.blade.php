@@ -141,7 +141,7 @@
             }, 600);
         });
 
-        // KLIK ROW UNTUK MODAL (Poin 75)
+        // KLIK ROW UNTUK MODAL
         $j(document).on('click', '#tabelBarang tbody tr', function() {
             currentRow = $j(this);
             let id = currentRow.find('td:eq(0)').text();
@@ -152,11 +152,10 @@
             $j('#editNama').val(nama);
             $j('#editHarga').val(harga);
             
-            // Trigger modal manual pakai JQuery agar lebih aman
             $j('#modalEdit').modal('show'); 
         });
 
-        // PROSES UBAH (Poin 94)
+        // PROSES UBAH
         $j('#btnUbah').on('click', function() {
             let namaBaru = $j('#editNama').val();
             let hargaBaru = $j('#editHarga').val();
@@ -169,7 +168,7 @@
             }
         });
 
-        // PROSES HAPUS (Poin 93)
+        // PROSES HAPUS
         $j('#btnHapus').on('click', function() {
             currentRow.remove();
             $j('#modalEdit').modal('hide');

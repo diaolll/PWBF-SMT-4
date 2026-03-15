@@ -1,4 +1,3 @@
-{{-- resources/views/wilayah/index.blade.php --}}
 @extends('layouts.template')
 
 @section('content')

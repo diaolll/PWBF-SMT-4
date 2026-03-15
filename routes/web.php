@@ -10,7 +10,6 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ModulController;
-
 use App\Http\Controllers\WilayahController;
 use App\Http\Controllers\PosController;
 

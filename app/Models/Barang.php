@@ -22,17 +22,10 @@ class Barang extends Model
         'timestamp',
     ];
 
-    // -------------------------------------------------------------------------
-    // Accessor: Format harga ke Rupiah saat dipanggil $barang->harga_formatted
-    // -------------------------------------------------------------------------
     public function getHargaFormattedAttribute()
     {
         return 'Rp ' . number_format($this->harga, 0, ',', '.');
     }
-
-    // -------------------------------------------------------------------------
-    // Relasi: Satu barang bisa muncul di banyak penjualan_detail
-    // -------------------------------------------------------------------------
     public function penjualanDetail()
     {
         return $this->hasMany(PenjualanDetail::class, 'id_barang', 'id_barang');

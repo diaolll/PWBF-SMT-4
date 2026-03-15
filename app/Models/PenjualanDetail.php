@@ -22,17 +22,10 @@ class PenjualanDetail extends Model
         'subtotal',
     ];
 
-    // -------------------------------------------------------------------------
-    // Relasi: Detail ini milik satu transaksi penjualan
-    // -------------------------------------------------------------------------
     public function penjualan()
     {
         return $this->belongsTo(Penjualan::class, 'id_penjualan', 'id_penjualan');
     }
-
-    // -------------------------------------------------------------------------
-    // Relasi: Detail ini merujuk ke satu barang
-    // -------------------------------------------------------------------------
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang', 'id_barang');

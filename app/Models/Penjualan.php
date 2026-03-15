@@ -19,10 +19,6 @@ class Penjualan extends Model
         'timestamp',
         'total',
     ];
-
-    // -------------------------------------------------------------------------
-    // Relasi: Satu penjualan punya banyak detail item
-    // -------------------------------------------------------------------------
     public function detail()
     {
         return $this->hasMany(PenjualanDetail::class, 'id_penjualan', 'id_penjualan');

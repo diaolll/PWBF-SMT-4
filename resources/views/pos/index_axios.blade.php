@@ -1,4 +1,3 @@
-{{-- resources/views/pos/index_axios.blade.php --}}
 @extends('layouts.template')
 
 @section('content')
@@ -8,7 +7,7 @@
             <h3 class="page-title">Point of Sales (POS)</h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Modul 4</a></li>
+                    <li class="breadcrumb-item"><a href="#">Modul 5</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Kasir</li>
                 </ol>
             </nav>
@@ -37,14 +36,12 @@
                 <div class="form-group">
                     <label for="kode-barang">Kode Barang</label>
                     <div class="input-group">
-                        <input type="text"
-                               id="kode-barang"
-                               class="form-control text-uppercase"
-                               placeholder="Ketik kode & tekan Enter"
-                               autocomplete="off">
+                        <input type="text" id="kode-barang" class="form-control text-uppercase"
+                               placeholder="Ketik kode & tekan Enter" autocomplete="off">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="button" id="btn-cari">
-                                <i class="mdi mdi-magnify"></i>
+                                <span id="txt-cari"><i class="mdi mdi-magnify"></i></span>
+                                <div id="loader-cari" class="spinner-border spinner-border-sm d-none"></div>
                             </button>
                         </div>
                     </div>
@@ -70,12 +67,12 @@
 
                 <div class="form-group">
                     <label for="jumlah">Jumlah</label>
-                    <input type="number" id="jumlah" class="form-control"
-                           value="1" min="1" placeholder="Masukan jumlah">
+                    <input type="number" id="jumlah" class="form-control" value="1" min="1">
                 </div>
 
                 <button id="btn-tambah" class="btn btn-success btn-block" disabled>
-                    <i class="mdi mdi-plus-circle me-1"></i> Tambahkan
+                    <span id="txt-tambah">Tambahkan</span>
+                    <div id="loader-tambah" class="spinner-border spinner-border-sm d-none"></div>
                 </button>
 
             </div>
@@ -122,7 +119,8 @@
 
                 <div class="text-right mt-3">
                     <button id="btn-bayar" class="btn btn-success btn-lg" disabled>
-                        <i class="mdi mdi-cash me-1"></i> Bayar
+                        <span id="txt-bayar">Bayar</span>
+                        <div id="loader-bayar" class="spinner-border spinner-border-sm d-none"></div>
                     </button>
                 </div>
 
@@ -134,19 +132,35 @@
 @endsection
 
 @push('scripts')
-{{-- CSRF Token di meta tag untuk Axios --}}
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// Set CSRF Token global untuk semua request Axios
-axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+axios.defaults.headers.common['X-CSRF-TOKEN'] =
+    document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 axios.defaults.headers.common['Accept'] = 'application/json';
 
 let barangAktif = null;
 
 function formatRupiah(angka) {
     return parseInt(angka).toLocaleString('id-ID');
+}
+
+// Toggle loading — pola sama dengan contoh barang (spinner-border + d-none)
+function setCariLoading(loading) {
+    document.getElementById('btn-cari').disabled = loading;
+    document.getElementById('txt-cari').classList.toggle('d-none', loading);
+    document.getElementById('loader-cari').classList.toggle('d-none', !loading);
+}
+function setTambahLoading(loading) {
+    document.getElementById('btn-tambah').disabled = loading;
+    document.getElementById('txt-tambah').classList.toggle('d-none', loading);
+    document.getElementById('loader-tambah').classList.toggle('d-none', !loading);
+}
+function setBayarLoading(loading) {
+    document.getElementById('btn-bayar').disabled = loading;
+    document.getElementById('txt-bayar').classList.toggle('d-none', loading);
+    document.getElementById('loader-bayar').classList.toggle('d-none', !loading);
 }
 
 function hitungTotal() {
@@ -183,9 +197,12 @@ function cariBarang() {
     const kode = document.getElementById('kode-barang').value.trim().toUpperCase();
     document.getElementById('kode-barang').value = kode;
     if (!kode) {
-        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Kode barang tidak boleh kosong!', timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Kode barang tidak boleh kosong!',
+            timer: 1500, showConfirmButton: false });
         return;
     }
+
+    setCariLoading(true);
     const status = document.getElementById('status-barang');
     status.textContent = 'Mencari...';
     status.className   = 'form-text text-muted';
@@ -194,6 +211,7 @@ function cariBarang() {
 
     axios.get(`/api/barang/${kode}`)
         .then(function (response) {
+            setCariLoading(false);
             barangAktif = response.data.data;
             document.getElementById('nama-barang').value  = barangAktif.nama;
             document.getElementById('harga-barang').value = formatRupiah(barangAktif.harga);
@@ -204,6 +222,7 @@ function cariBarang() {
             document.getElementById('jumlah').focus();
         })
         .catch(function () {
+            setCariLoading(false);
             barangAktif = null;
             document.getElementById('nama-barang').value  = '';
             document.getElementById('harga-barang').value = '';
@@ -213,63 +232,63 @@ function cariBarang() {
         });
 }
 
-// Enter → cari barang
 document.getElementById('kode-barang').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') cariBarang();
 });
-
-// Klik tombol cari
 document.getElementById('btn-cari').addEventListener('click', cariBarang);
 
-// Jumlah berubah
 document.getElementById('jumlah').addEventListener('input', function () {
     const jumlah = parseInt(this.value);
     document.getElementById('btn-tambah').disabled = !barangAktif || isNaN(jumlah) || jumlah <= 0;
 });
 
-// Tombol Tambahkan
 document.getElementById('btn-tambah').addEventListener('click', function () {
     if (!barangAktif) return;
     const jumlah = parseInt(document.getElementById('jumlah').value);
     if (!jumlah || jumlah <= 0) {
-        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Jumlah harus lebih dari 0!', timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Jumlah harus lebih dari 0!',
+            timer: 1500, showConfirmButton: false });
         return;
     }
-    const kode     = barangAktif.id_barang;
-    const nama     = barangAktif.nama;
-    const harga    = barangAktif.harga;
-    const subtotal = harga * jumlah;
 
-    const existing = document.querySelector(`#tbody-transaksi tr[data-kode="${kode}"]`);
-    if (existing) {
-        const qtyInput = existing.querySelector('.qty-input');
-        qtyInput.value = parseInt(qtyInput.value) + jumlah;
+    setTambahLoading(true);
+
+    setTimeout(function () {
+        const kode     = barangAktif.id_barang;
+        const harga    = barangAktif.harga;
+        const subtotal = harga * jumlah;
+
+        const existing = document.querySelector(`#tbody-transaksi tr[data-kode="${kode}"]`);
+        if (existing) {
+            const qtyInput = existing.querySelector('.qty-input');
+            qtyInput.value = parseInt(qtyInput.value) + jumlah;
+        } else {
+            const tbody = document.getElementById('tbody-transaksi');
+            const tr    = document.createElement('tr');
+            tr.setAttribute('data-kode', kode);
+            tr.setAttribute('data-harga', harga);
+            tr.innerHTML = `
+                <td><code>${kode}</code></td>
+                <td>${barangAktif.nama}</td>
+                <td>Rp ${formatRupiah(harga)}</td>
+                <td class="text-center">
+                    <input type="number" class="form-control form-control-sm qty-input text-center"
+                           value="${jumlah}" min="1" style="width:80px;margin:auto;">
+                </td>
+                <td class="subtotal-cell">Rp ${formatRupiah(subtotal)}</td>
+                <td class="text-center">
+                    <button class="btn btn-danger btn-sm btn-hapus">
+                        <i class="mdi mdi-delete"></i>
+                    </button>
+                </td>`;
+            tbody.appendChild(tr);
+        }
         hitungTotal();
-    } else {
-        const tbody = document.getElementById('tbody-transaksi');
-        const tr    = document.createElement('tr');
-        tr.setAttribute('data-kode', kode);
-        tr.setAttribute('data-harga', harga);
-        tr.innerHTML = `
-            <td><code>${kode}</code></td>
-            <td>${nama}</td>
-            <td>Rp ${formatRupiah(harga)}</td>
-            <td class="text-center">
-                <input type="number" class="form-control form-control-sm qty-input text-center" value="${jumlah}" min="1" style="width:80px;margin:auto;">
-            </td>
-            <td class="subtotal-cell">Rp ${formatRupiah(subtotal)}</td>
-            <td class="text-center">
-                <button class="btn btn-danger btn-sm btn-hapus">
-                    <i class="mdi mdi-delete"></i>
-                </button>
-            </td>`;
-        tbody.appendChild(tr);
-        hitungTotal();
-    }
-    resetFormBarang();
+        setTambahLoading(false);
+        resetFormBarang();
+    }, 400);
 });
 
-// Perubahan qty di tabel
 document.getElementById('tbody-transaksi').addEventListener('input', function (e) {
     if (e.target.classList.contains('qty-input')) {
         const val = parseInt(e.target.value);
@@ -278,20 +297,19 @@ document.getElementById('tbody-transaksi').addEventListener('input', function (e
     }
 });
 
-// Hapus baris
 document.getElementById('tbody-transaksi').addEventListener('click', function (e) {
     const btn = e.target.closest('.btn-hapus');
     if (btn) { btn.closest('tr').remove(); hitungTotal(); }
 });
 
-// Tombol Bayar
 document.getElementById('btn-bayar').addEventListener('click', function () {
     const items = [];
     document.querySelectorAll('#tbody-transaksi tr[data-kode]').forEach(function (baris) {
         items.push({
             id_barang : baris.dataset.kode,
             jumlah    : parseInt(baris.querySelector('.qty-input').value) || 0,
-            subtotal  : parseInt(baris.dataset.harga) * (parseInt(baris.querySelector('.qty-input').value) || 0),
+            subtotal  : parseInt(baris.dataset.harga) *
+                        (parseInt(baris.querySelector('.qty-input').value) || 0),
         });
     });
     if (items.length === 0) return;
@@ -299,38 +317,35 @@ document.getElementById('btn-bayar').addEventListener('click', function () {
     Swal.fire({
         title: 'Konfirmasi Pembayaran',
         text: `Proses transaksi dengan ${items.length} item?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3f51b5',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Ya, Bayar!',
-        cancelButtonText: 'Batal',
+        icon: 'question', showCancelButton: true,
+        confirmButtonColor: '#3f51b5', cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Bayar!', cancelButtonText: 'Batal',
     }).then(function (result) {
         if (!result.isConfirmed) return;
 
-        const btnBayar = document.getElementById('btn-bayar');
-        btnBayar.disabled   = true;
-        btnBayar.innerHTML  = '<i class="mdi mdi-loading mdi-spin me-1"></i> Memproses...';
+        setBayarLoading(true);
 
         axios.post("{{ route('api.bayar') }}", { items: items })
             .then(function (response) {
                 if (response.data.status === 'success') {
+                    setBayarLoading(false);
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Transaksi Berhasil!',
-                        html: `ID Transaksi: <b>#${response.data.data.id_penjualan}</b><br>Total: <b>Rp ${formatRupiah(response.data.data.total)}</b>`,
+                        icon: 'success', title: 'Transaksi Berhasil!',
+                        html: `ID Transaksi: <b>#${response.data.data.id_penjualan}</b><br>
+                               Total: <b>Rp ${formatRupiah(response.data.data.total)}</b>`,
                         confirmButtonColor: '#3f51b5',
                     }).then(function () {
-                        document.querySelectorAll('#tbody-transaksi tr[data-kode]').forEach(tr => tr.remove());
+                        document.querySelectorAll('#tbody-transaksi tr[data-kode]')
+                            .forEach(tr => tr.remove());
                         hitungTotal();
                         resetFormBarang();
                     });
                 }
             })
             .catch(function (error) {
-                btnBayar.disabled  = false;
-                btnBayar.innerHTML = '<i class="mdi mdi-cash me-1"></i> Bayar';
-                const msg = error.response && error.response.data ? error.response.data.message : 'Terjadi kesalahan.';
+                setBayarLoading(false);
+                const msg = error.response && error.response.data
+                    ? error.response.data.message : 'Terjadi kesalahan.';
                 Swal.fire('Error!', msg, 'error');
             });
     });

@@ -7,7 +7,7 @@
             <h3 class="page-title">Point of Sales (POS)</h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Modul 4</a></li>
+                    <li class="breadcrumb-item"><a href="#">Modul 5</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Kasir</li>
                 </ol>
             </nav>
@@ -33,64 +33,46 @@
                     </div>
                 </div>
 
-                {{-- Kode Barang --}}
                 <div class="form-group">
                     <label for="kode-barang">Kode Barang</label>
                     <div class="input-group">
-                        <input type="text"
-                               id="kode-barang"
-                               class="form-control text-uppercase"
-                               placeholder="Ketik kode & tekan Enter"
-                               autocomplete="off">
+                        <input type="text" id="kode-barang" class="form-control text-uppercase"
+                               placeholder="Ketik kode & tekan Enter" autocomplete="off">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="button" id="btn-cari">
-                                <i class="mdi mdi-magnify"></i>
+                                <span id="txt-cari"><i class="mdi mdi-magnify"></i></span>
+                                <div id="loader-cari" class="spinner-border spinner-border-sm d-none"></div>
                             </button>
                         </div>
                     </div>
                     <small id="status-barang" class="form-text"></small>
                 </div>
 
-                {{-- Nama Barang (readonly) --}}
                 <div class="form-group">
                     <label for="nama-barang">Nama Barang</label>
-                    <input type="text"
-                           id="nama-barang"
-                           class="form-control"
-                           style="background-color:#fff8e1;"
-                           placeholder="Otomatis terisi"
-                           readonly>
+                    <input type="text" id="nama-barang" class="form-control"
+                           style="background-color:#fff8e1;" placeholder="Otomatis terisi" readonly>
                 </div>
 
-                {{-- Harga Barang (readonly) --}}
                 <div class="form-group">
                     <label for="harga-barang">Harga Satuan</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Rp</span>
                         </div>
-                        <input type="text"
-                               id="harga-barang"
-                               class="form-control"
-                               style="background-color:#fff8e1;"
-                               placeholder="Otomatis terisi"
-                               readonly>
+                        <input type="text" id="harga-barang" class="form-control"
+                               style="background-color:#fff8e1;" placeholder="Otomatis terisi" readonly>
                     </div>
                 </div>
 
-                {{-- Jumlah --}}
                 <div class="form-group">
                     <label for="jumlah">Jumlah</label>
-                    <input type="number"
-                           id="jumlah"
-                           class="form-control"
-                           value="1"
-                           min="1"
-                           placeholder="Masukan jumlah">
+                    <input type="number" id="jumlah" class="form-control" value="1" min="1">
                 </div>
 
                 <button id="btn-tambah" class="btn btn-success btn-block" disabled>
-                    <i class="mdi mdi-plus-circle me-1"></i> Tambahkan
+                    <span id="txt-tambah">Tambahkan</span>
+                    <div id="loader-tambah" class="spinner-border spinner-border-sm d-none"></div>
                 </button>
 
             </div>
@@ -137,7 +119,8 @@
 
                 <div class="text-right mt-3">
                     <button id="btn-bayar" class="btn btn-success btn-lg" disabled>
-                        <i class="mdi mdi-cash me-1"></i> Bayar
+                        <span id="txt-bayar">Bayar</span>
+                        <div id="loader-bayar" class="spinner-border spinner-border-sm d-none"></div>
                     </button>
                 </div>
 
@@ -157,10 +140,26 @@ function formatRupiah(angka) {
     return parseInt(angka).toLocaleString('id-ID');
 }
 
+// Toggle loading state — pola sama persis dengan contoh barang
+function setCariLoading(loading) {
+    $('#btn-cari').prop('disabled', loading);
+    $('#txt-cari').toggleClass('d-none', loading);
+    $('#loader-cari').toggleClass('d-none', !loading);
+}
+function setTambahLoading(loading) {
+    $('#btn-tambah').prop('disabled', loading);
+    $('#txt-tambah').toggleClass('d-none', loading);
+    $('#loader-tambah').toggleClass('d-none', !loading);
+}
+function setBayarLoading(loading) {
+    $('#btn-bayar').prop('disabled', loading);
+    $('#txt-bayar').toggleClass('d-none', loading);
+    $('#loader-bayar').toggleClass('d-none', !loading);
+}
+
 function hitungTotal() {
     let grandTotal = 0;
     let jumlahItem = 0;
-
     $('#tbody-transaksi tr[data-kode]').each(function () {
         const harga    = parseInt($(this).data('harga'));
         const jumlah   = parseInt($(this).find('.qty-input').val()) || 0;
@@ -169,16 +168,11 @@ function hitungTotal() {
         grandTotal += subtotal;
         jumlahItem++;
     });
-
     $('#grand-total').text('Rp ' + formatRupiah(grandTotal));
     $('#badge-item').text(jumlahItem + ' item');
     $('#btn-bayar').prop('disabled', jumlahItem === 0);
-
-    if (jumlahItem === 0) {
-        $('#empty-row').show();
-    } else {
-        $('#empty-row').hide();
-    }
+    if (jumlahItem === 0) { $('#empty-row').show(); }
+    else                  { $('#empty-row').hide(); }
 }
 
 function resetFormBarang() {
@@ -186,7 +180,7 @@ function resetFormBarang() {
     $('#nama-barang').val('');
     $('#harga-barang').val('');
     $('#jumlah').val('1');
-    $('#status-barang').text('').removeClass('text-success text-danger');
+    $('#status-barang').text('').removeClass('text-success text-danger text-muted');
     $('#btn-tambah').prop('disabled', true);
     barangAktif = null;
 }
@@ -194,148 +188,141 @@ function resetFormBarang() {
 function cariBarang() {
     const kode = $('#kode-barang').val().trim().toUpperCase();
     $('#kode-barang').val(kode);
-
     if (!kode) {
-        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Kode barang tidak boleh kosong!', timer: 1500, showConfirmButton: false });
+        Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Kode barang tidak boleh kosong!',
+            timer: 1500, showConfirmButton: false });
         return;
     }
 
+    setCariLoading(true);
     $('#status-barang').text('Mencari...').removeClass('text-success text-danger').addClass('text-muted');
     $('#btn-tambah').prop('disabled', true);
     barangAktif = null;
 
     $.ajax({
         url: `/api/barang/${kode}`,
-        type: "GET",
+        type: 'GET',
         success: function (response) {
+            setCariLoading(false);
             barangAktif = response.data;
             $('#nama-barang').val(barangAktif.nama);
             $('#harga-barang').val(formatRupiah(barangAktif.harga));
             $('#jumlah').val('1');
-            $('#status-barang').text('✔ Barang ditemukan').removeClass('text-muted text-danger').addClass('text-success');
+            $('#status-barang').text('✔ Barang ditemukan')
+                .removeClass('text-muted text-danger').addClass('text-success');
             $('#btn-tambah').prop('disabled', false);
             $('#jumlah').focus();
         },
         error: function () {
+            setCariLoading(false);
             barangAktif = null;
-            $('#nama-barang').val('');
-            $('#harga-barang').val('');
-            $('#status-barang').text('✘ Barang tidak ditemukan').removeClass('text-muted text-success').addClass('text-danger');
-            $('#btn-tambah').prop('disabled', true);
+            $('#nama-barang, #harga-barang').val('');
+            $('#status-barang').text('✘ Barang tidak ditemukan')
+                .removeClass('text-muted text-success').addClass('text-danger');
         }
     });
 }
 
 $(document).ready(function () {
 
-    // Enter pada kode barang → cari
-    $('#kode-barang').on('keydown', function (e) {
-        if (e.key === 'Enter') cariBarang();
-    });
+    $('#kode-barang').on('keydown', function (e) { if (e.key === 'Enter') cariBarang(); });
+    $('#btn-cari').on('click', function () { cariBarang(); });
 
-    // Klik tombol cari
-    $('#btn-cari').on('click', function () {
-        cariBarang();
-    });
-
-    // Input jumlah berubah
     $('#jumlah').on('input', function () {
         const jumlah = parseInt($(this).val());
         $('#btn-tambah').prop('disabled', !barangAktif || isNaN(jumlah) || jumlah <= 0);
     });
 
-    // Tombol Tambahkan
     $('#btn-tambah').on('click', function () {
         if (!barangAktif) return;
         const jumlah = parseInt($('#jumlah').val());
         if (!jumlah || jumlah <= 0) {
-            Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Jumlah harus lebih dari 0!', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Jumlah harus lebih dari 0!',
+                timer: 1500, showConfirmButton: false });
             return;
         }
-        const kode     = barangAktif.id_barang;
-        const nama     = barangAktif.nama;
-        const harga    = barangAktif.harga;
-        const subtotal = harga * jumlah;
 
-        // Cek duplikat
-        const existing = $(`#tbody-transaksi tr[data-kode="${kode}"]`);
-        if (existing.length > 0) {
-            const qtyLama = parseInt(existing.find('.qty-input').val()) || 0;
-            existing.find('.qty-input').val(qtyLama + jumlah);
+        setTambahLoading(true);
+
+        setTimeout(function () {
+            const kode     = barangAktif.id_barang;
+            const harga    = barangAktif.harga;
+            const subtotal = harga * jumlah;
+
+            const existing = $(`#tbody-transaksi tr[data-kode="${kode}"]`);
+            if (existing.length > 0) {
+                const qtyLama = parseInt(existing.find('.qty-input').val()) || 0;
+                existing.find('.qty-input').val(qtyLama + jumlah);
+            } else {
+                const baris = `
+                    <tr data-kode="${kode}" data-harga="${harga}">
+                        <td><code>${kode}</code></td>
+                        <td>${barangAktif.nama}</td>
+                        <td>Rp ${formatRupiah(harga)}</td>
+                        <td class="text-center">
+                            <input type="number" class="form-control form-control-sm qty-input text-center"
+                                   value="${jumlah}" min="1" style="width:80px;margin:auto;">
+                        </td>
+                        <td class="subtotal-cell">Rp ${formatRupiah(subtotal)}</td>
+                        <td class="text-center">
+                            <button class="btn btn-danger btn-sm btn-hapus">
+                                <i class="mdi mdi-delete"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                $('#tbody-transaksi').append(baris);
+            }
             hitungTotal();
-        } else {
-            const baris = `
-                <tr data-kode="${kode}" data-harga="${harga}">
-                    <td><code>${kode}</code></td>
-                    <td>${nama}</td>
-                    <td>Rp ${formatRupiah(harga)}</td>
-                    <td class="text-center">
-                        <input type="number" class="form-control form-control-sm qty-input text-center" value="${jumlah}" min="1" style="width:80px;margin:auto;">
-                    </td>
-                    <td class="subtotal-cell">Rp ${formatRupiah(subtotal)}</td>
-                    <td class="text-center">
-                        <button class="btn btn-danger btn-sm btn-hapus">
-                            <i class="mdi mdi-delete"></i>
-                        </button>
-                    </td>
-                </tr>`;
-            $('#tbody-transaksi').append(baris);
-            hitungTotal();
-        }
-        resetFormBarang();
+            setTambahLoading(false);
+            resetFormBarang();
+        }, 400);
     });
 
-    // Perubahan qty di tabel
     $('#tbody-transaksi').on('input', '.qty-input', function () {
         const val = parseInt($(this).val());
         if (isNaN(val) || val < 1) $(this).val(1);
         hitungTotal();
     });
 
-    // Hapus baris
     $('#tbody-transaksi').on('click', '.btn-hapus', function () {
         $(this).closest('tr').remove();
         hitungTotal();
     });
 
-    // Tombol Bayar
     $('#btn-bayar').on('click', function () {
         const items = [];
         $('#tbody-transaksi tr[data-kode]').each(function () {
-            const kode     = $(this).data('kode');
-            const harga    = parseInt($(this).data('harga'));
-            const jumlah   = parseInt($(this).find('.qty-input').val()) || 0;
-            const subtotal = harga * jumlah;
-            items.push({ id_barang: kode, jumlah: jumlah, subtotal: subtotal });
+            const kode   = $(this).data('kode');
+            const harga  = parseInt($(this).data('harga'));
+            const jumlah = parseInt($(this).find('.qty-input').val()) || 0;
+            items.push({ id_barang: kode, jumlah: jumlah, subtotal: harga * jumlah });
         });
         if (items.length === 0) return;
 
         Swal.fire({
             title: 'Konfirmasi Pembayaran',
             text: `Proses transaksi dengan ${items.length} item?`,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3f51b5',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Bayar!',
-            cancelButtonText: 'Batal',
+            icon: 'question', showCancelButton: true,
+            confirmButtonColor: '#3f51b5', cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Bayar!', cancelButtonText: 'Batal',
         }).then(function (result) {
             if (!result.isConfirmed) return;
 
-            $('#btn-bayar').prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin me-1"></i> Memproses...');
+            setBayarLoading(true);
 
             $.ajax({
-                url: "{{ route('api.bayar') }}",
-                type: "POST",
-                data: JSON.stringify({ items: items }),
-                contentType: "application/json",
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                url:         "{{ route('api.bayar') }}",
+                type:        'POST',
+                data:        JSON.stringify({ items: items }),
+                contentType: 'application/json',
+                headers:     { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                 success: function (response) {
                     if (response.status === 'success') {
+                        setBayarLoading(false);
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Transaksi Berhasil!',
-                            html: `ID Transaksi: <b>#${response.data.id_penjualan}</b><br>Total: <b>Rp ${formatRupiah(response.data.total)}</b>`,
+                            icon: 'success', title: 'Transaksi Berhasil!',
+                            html: `ID Transaksi: <b>#${response.data.id_penjualan}</b><br>
+                                   Total: <b>Rp ${formatRupiah(response.data.total)}</b>`,
                             confirmButtonColor: '#3f51b5',
                         }).then(function () {
                             $('#tbody-transaksi tr[data-kode]').remove();
@@ -345,7 +332,7 @@ $(document).ready(function () {
                     }
                 },
                 error: function (xhr) {
-                    $('#btn-bayar').prop('disabled', false).html('<i class="mdi mdi-cash me-1"></i> Bayar');
+                    setBayarLoading(false);
                     const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi kesalahan.';
                     Swal.fire('Error!', msg, 'error');
                 }

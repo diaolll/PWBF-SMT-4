@@ -320,6 +320,52 @@
                         </ul>
                     </div>
                 </li>
+            
+{{-- ===================== --}}
+{{-- MODUL 6 - KANTIN SYSTEM --}}
+{{-- ===================== --}}
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul6"
+       aria-expanded="false" aria-controls="ui-modul6">
+        <span class="menu-title">Modul 6</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-store menu-icon"></i>
+    </a>
+
+    <div class="collapse" id="ui-modul6">
+        <ul class="nav flex-column sub-menu">
+
+            {{-- Frontend Kantin --}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('kantin.index') }}">
+                    Kantin (Frontend)
+                </a>
+            </li>
+
+            {{-- Master Vendor (URL disamakan dengan web.php) --}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.vendor.index') }}">
+                    Master Vendor
+                </a>
+            </li>
+
+            {{-- Master Menu (URL disamakan dengan web.php) --}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.menu.index') }}">
+                    Master Menu
+                </a>
+            </li>
+
+            {{-- Pesanan Kantin (URL disamakan dengan web.php) --}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.pesanan.index') }}">
+                    Pesanan Kantin
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</li>
 
             </ul>
         </nav>

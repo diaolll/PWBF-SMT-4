@@ -27,7 +27,6 @@ public function retry($order_id)
 {
     $pesanan = Pesanan::where('order_id', $order_id)->firstOrFail();
 
-    // 🔥 CONFIG MIDTRANS
     Config::$serverKey = config('services.midtrans.server_key');
     Config::$isProduction = config('services.midtrans.is_production', false);
 
@@ -45,7 +44,6 @@ public function retry($order_id)
         $total += $d->subtotal;
     }
 
-    // 🔥 ORDER BARU (WAJIB)
     $newOrderId = 'INV-' . date('ymd-His') . '-' . rand(100,999);
 
     $pesanan->update([

@@ -1,130 +1,193 @@
 @extends('layouts.Template')
 
 @section('content')
-<div class="page-header">
-    <h3 class="page-title d-flex align-items-center">
-        <span class="page-title-icon bg-gradient-success text-white me-2">
-            <i class="mdi mdi-receipt"></i>
-        </span>
-        Riwayat Transaksi
-    </h3>
-</div>
+    <style>
+        :root {
+            --border-soft: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dark: #1e293b;
+            --accent: #3b82f6;
+            --bg-soft: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
 
-<div class="row">
-    <div class="col-12 grid-margin">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-soft);
+        }
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+        .page-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
 
-                        {{-- ================= HEADER ================= --}}
-                        <thead class="text-muted border-bottom">
-                            <tr>
-                                <th>ORDER ID</th>
-                                <th>PELANGGAN</th>
-                                <th>TOTAL</th>
-                                <th>METODE</th>
-                                <th class="text-center">STATUS</th>
-                                <th class="text-center">AKSI</th>
-                            </tr>
-                        </thead>
+        .card {
+            background: white;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+        }
 
-                        {{-- ================= BODY ================= --}}
-                        <tbody>
-                            @forelse($pesanan as $p)
+        .card-body {
+            padding: 1.5rem;
+        }
 
-                            @php
-                                $status = $p->status_bayar;
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-                                // STATUS
-                                $label = match($status) {
-                                    1 => 'LUNAS',
-                                    2 => 'GAGAL',
-                                    default => 'PENDING',
-                                };
+        .data-table thead {
+            background: var(--bg-soft);
+        }
 
-                                $badge = match($status) {
-                                    1 => 'badge-gradient-success',
-                                    2 => 'badge-gradient-danger',
-                                    default => 'badge-gradient-warning',
-                                };
+        .data-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
 
-                                // METODE
-                                $metode = match($p->metode_bayar) {
-                                    1 => 'QRIS',
-                                    2 => 'VA / Bank Transfer',
-                                    3 => 'Mandiri Bill',
-                                    4 => 'Alfamart / Indomaret',
-                                    5 => 'GoPay',
-                                    6 => 'ShopeePay',
-                                    7 => 'Kartu Kredit',
-                                    default => 'Belum dibayar',
-                                };
-                            @endphp
+        .data-table th.text-center {
+            text-align: center;
+        }
 
-                            <tr>
-                                {{-- ORDER ID --}}
-                                <td class="fw-bold text-info">
-                                    #{{ $p->order_id }}
-                                </td>
+        .data-table td {
+            padding: 0.85rem 1rem;
+            border-top: 1px solid var(--border-soft);
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
 
-                                {{-- PELANGGAN --}}
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-gradient-info text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                                             style="width:30px; height:30px;">
-                                            {{ strtoupper(substr($p->nama ?? 'G', 0, 1)) }}
-                                        </div>
-                                        {{ $p->nama ?? 'Guest' }}
-                                    </div>
-                                </td>
+        .data-table tbody tr:hover {
+            background: var(--bg-soft);
+        }
 
-                                {{-- TOTAL --}}
-                                <td class="text-success fw-bold">
-                                    Rp {{ number_format($p->total, 0, ',', '.') }}
-                                </td>
+        .order-id {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
 
-                                {{-- METODE --}}
-                                <td>
-                                    <span class="text-muted small">
-                                        <i class="mdi mdi-credit-card-outline me-1"></i>
-                                        {{ $metode }}
-                                    </span>
-                                </td>
+        .customer-badge {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
 
-                                {{-- STATUS --}}
-                                <td class="text-center">
-                                    <label class="badge {{ $badge }} text-white px-3 py-2">
-                                        {{ $label }}
-                                    </label>
-                                </td>
+        .price-text {
+            color: var(--success);
+            font-weight: 600;
+        }
 
-                                {{-- AKSI --}}
-                                <td class="text-center">
-                                    <a href="{{ route('pesanan.detail', $p->order_id) }}"
-                                       class="btn btn-sm btn-outline-info">
-                                        Rincian
-                                        <i class="mdi mdi-chevron-right"></i>
-                                    </a>
-                                </td>
-                            </tr>
+        .badge-status {
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
 
-                            @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
-                                    <i class="mdi mdi-database-off-outline d-block mb-2" style="font-size: 30px;"></i>
-                                    Belum ada transaksi.
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
 
-                    </table>
-                </div>
+        .btn-detail {
+            padding: 0.4rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--border-soft);
+            background: white;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
 
-            </div>
+        .btn-detail:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+    </style>
+
+    <div class="page-header">
+        <h2><i class="mdi mdi-receipt me-2"></i>Riwayat Transaksi</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Pelanggan</th>
+                        <th>Total</th>
+                        <th>Metode</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($pesanan as $p)
+                    @php
+                        $status = $p->status_bayar;
+                        $label = $status == 1 ? 'LUNAS' : ($status == 2 ? 'GAGAL' : 'PENDING');
+                        $badge = $status == 1 ? 'badge-success' : ($status == 2 ? 'badge-danger' : 'badge-warning');
+                        $metode = match($p->metode_bayar) {
+                            1 => 'QRIS', 2 => 'VA/Transfer', 3 => 'Mandiri Bill',
+                            4 => 'Alfamart/Indomaret', 5 => 'GoPay', 6 => 'ShopeePay',
+                            7 => 'Kartu Kredit', default => '−'
+                        };
+                    @endphp
+                    <tr>
+                        <td><span class="order-id">#{{ $p->order_id }}</span></td>
+                        <td>
+                            <span class="customer-badge">{{ strtoupper(substr($p->nama ?? 'G', 0, 1)) }}</span>
+                            {{ $p->nama ?? 'Guest' }}
+                        </td>
+                        <td><span class="price-text">Rp {{ number_format($p->total, 0, ',', '.') }}</span></td>
+                        <td class="text-muted small">{{ $metode }}</td>
+                        <td class="text-center"><span class="badge-status {{ $badge }}">{{ $label }}</span></td>
+                        <td class="text-center">
+                            <a href="{{ route('pesanan.detail', $p->order_id) }}" class="btn-detail">
+                                Detail <i class="mdi mdi-chevron-right"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="mdi mdi-database-off d-block mb-2" style="font-size: 2rem;"></i>
+                                Belum ada transaksi
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
 @endsection

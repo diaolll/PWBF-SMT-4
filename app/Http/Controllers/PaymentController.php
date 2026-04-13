@@ -8,6 +8,8 @@ use Midtrans\Config;
 use Midtrans\Notification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 
 class PaymentController extends Controller
 {
@@ -45,63 +47,63 @@ class PaymentController extends Controller
     /**
      * CALLBACK (Otomatis dari Midtrans ke Server)
      */
-public function callback(Request $request)
-{
-    try {
-        $notif = $request->all();
-        Log::info("CALLBACK MASUK", $notif);
+    public function callback(Request $request)
+    {
+        try {
+            $notif = $request->all();
+            Log::info("CALLBACK MASUK", $notif);
 
-        $serverKey = config('services.midtrans.server_key');
+            $serverKey = config('services.midtrans.server_key');
 
-        // VALIDASI DASAR
-        if (!isset($notif['order_id'], $notif['status_code'], $notif['gross_amount'])) {
-            return response()->json(['message' => 'Data tidak lengkap'], 400);
+            // VALIDASI DASAR
+            if (!isset($notif['order_id'], $notif['status_code'], $notif['gross_amount'])) {
+                return response()->json(['message' => 'Data tidak lengkap'], 400);
+            }
+
+            // VALIDASI SIGNATURE
+            $signature = hash("sha512",
+                $notif['order_id'] .
+                $notif['status_code'] .
+                $notif['gross_amount'] .
+                $serverKey
+            );
+
+            if ($signature !== ($notif['signature_key'] ?? '')) {
+                Log::error("INVALID SIGNATURE", $notif);
+                return response()->json(['message' => 'Invalid Signature'], 403);
+            }
+
+            Log::info("CARI ORDER", ['order_id' => $notif['order_id']]);
+
+            $pesanan = Pesanan::where('order_id', $notif['order_id'])->first();
+
+            if (!$pesanan) {
+                Log::error("ORDER TIDAK DITEMUKAN", $notif);
+                return response()->json(['message' => 'Order not found'], 404);
+            }
+
+            // MAPPING
+            $status_bayar = $this->mapStatusBayar($notif['transaction_status'] ?? 'pending');
+            $metode_bayar = $this->mapMetodeBayar($notif['payment_type'] ?? '');
+
+            $pesanan->update([
+                'status_bayar' => $status_bayar,
+                'metode_bayar' => $metode_bayar
+            ]);
+
+            Log::info("UPDATE BERHASIL", [
+                'order_id' => $notif['order_id'],
+                'status'   => $status_bayar,
+                'metode'   => $metode_bayar
+            ]);
+
+            return response()->json(['status' => 'OK']);
+
+        } catch (\Exception $e) {
+            Log::error("CALLBACK ERROR: " . $e->getMessage());
+            return response()->json(['message' => 'Error'], 500);
         }
-
-        // VALIDASI SIGNATURE
-        $signature = hash("sha512",
-            $notif['order_id'] .
-            $notif['status_code'] .
-            $notif['gross_amount'] .
-            $serverKey
-        );
-
-        if ($signature !== ($notif['signature_key'] ?? '')) {
-            Log::error("INVALID SIGNATURE", $notif);
-            return response()->json(['message' => 'Invalid Signature'], 403);
-        }
-
-        Log::info("CARI ORDER", ['order_id' => $notif['order_id']]);
-
-        $pesanan = Pesanan::where('order_id', $notif['order_id'])->first();
-
-        if (!$pesanan) {
-            Log::error("ORDER TIDAK DITEMUKAN", $notif);
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        // MAPPING
-        $status_bayar = $this->mapStatusBayar($notif['transaction_status'] ?? 'pending');
-        $metode_bayar = $this->mapMetodeBayar($notif['payment_type'] ?? '');
-
-        $pesanan->update([
-            'status_bayar' => $status_bayar,
-            'metode_bayar' => $metode_bayar
-        ]);
-
-        Log::info("UPDATE BERHASIL", [
-            'order_id' => $notif['order_id'],
-            'status'   => $status_bayar,
-            'metode'   => $metode_bayar
-        ]);
-
-        return response()->json(['status' => 'OK']);
-
-    } catch (\Exception $e) {
-        Log::error("CALLBACK ERROR: " . $e->getMessage());
-        return response()->json(['message' => 'Error'], 500);
     }
-}
 
     public function index()
     {
@@ -177,5 +179,47 @@ public function callback(Request $request)
             Log::error('Check Status Error: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat mengecek status.');
         }
+    }
+
+    /**
+     * Halaman Sukses dengan QR Code
+     * Menerima order_id dari callback Midtrans
+     */
+    public function sukses(Request $request)
+    {
+        // Ambil dari query parameter atau session (fallback)
+        $orderId = $request->query('order_id') ?? session('last_order_id');
+
+        Log::info("SUKSES PAGE CALLED", [
+            'query_order_id' => $request->query('order_id'),
+            'session_order_id' => session('last_order_id'),
+            'final_order_id' => $orderId
+        ]);
+
+        if (!$orderId) {
+            return redirect()->route('kantin.index')->with('error', 'Order tidak ditemukan');
+        }
+
+        // Hapus session setelah digunakan
+        session()->forget('last_order_id');
+
+        $pesanan = Pesanan::with('details.menu')
+                    ->where('order_id', $orderId)
+                    ->first();
+
+        if (!$pesanan) {
+            Log::error("PESANAN NOT FOUND", ['order_id' => $orderId]);
+            return redirect()->route('kantin.index')->with('error', 'Pesanan tidak ditemukan');
+        }
+
+        // QR Code berisi idpesanan — untuk verifikasi ke kasir
+        $qrCode   = new QrCode((string) $pesanan->idpesanan);
+        $writer   = new PngWriter();
+        $result   = $writer->write($qrCode);
+        $qrBase64 = base64_encode($result->getString());
+
+        Log::info("RENDER SUKSES PAGE", ['order_id' => $orderId, 'idpesanan' => $pesanan->idpesanan]);
+
+        return view('kantin.sukses', compact('pesanan', 'qrBase64'));
     }
 }

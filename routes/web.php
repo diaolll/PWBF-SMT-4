@@ -15,6 +15,8 @@ use App\Http\Controllers\PosController;
 use App\Http\Controllers\KantinController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CustomerController;
+
 
 
 Route::middleware('guest')->group(function () {
@@ -88,7 +90,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [KantinController::class, 'index'])->name('index');
         Route::get('/menu/{id}', [KantinController::class, 'menu'])->name('menu');
         Route::post('/checkout', [KantinController::class, 'checkout'])->name('checkout');
-        // Route::get('/sukses', [KantinController::class, 'sukses'])->name('sukses');
+        Route::get('/sukses', [PaymentController::class, 'sukses'])->name('sukses'); // ← PaymentController
     });
 
     Route::get('/vendor', [AdminController::class, 'vendor'])->name('admin.vendor.index');
@@ -108,6 +110,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/generate-surat', [PDFController::class, 'generateSurat'])->name('pdf.surat');
 
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    /*
+    |--------------------------------------------------------------------------
+    | MODUL 7: CUSTOMER
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('customer')->name('customer.')->group(function () {
+        Route::get('/',         [CustomerController::class, 'index'])->name('index');
+        Route::get('/tambah1',  [CustomerController::class, 'tambah1'])->name('tambah1');
+        Route::post('/tambah1', [CustomerController::class, 'store1'])->name('store1');
+        Route::get('/tambah2',  [CustomerController::class, 'tambah2'])->name('tambah2');
+        Route::post('/tambah2', [CustomerController::class, 'store2'])->name('store2');
+    });
 });
 
 // Callback Midtrans (di luar auth)

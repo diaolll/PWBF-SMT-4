@@ -2,88 +2,403 @@
 
 @section('content')
     <style>
+        :root {
+            --bg-soft: #f8fafc;
+            --border-soft: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dark: #1e293b;
+            --accent: #3b82f6;
+        }
+
+        /* Header */
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-soft);
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            margin: 0.25rem 0 0;
+            font-size: 0.9rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-soft);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar select,
+        .filter-bar input {
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .filter-bar select:focus,
+        .filter-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-bar select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-bar input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        /* Menu Card */
         .menu-card {
-            border-radius: 20px;
-            border: none;
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            background: #fff;
+            background: white;
+            transition: all 0.2s;
         }
 
         .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
         }
 
-        .menu-img-container {
-            height: 160px;
-            overflow: hidden;
+        .menu-img {
+            height: 140px;
+            background: var(--bg-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .menu-img-container img {
+        .menu-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .cart-item {
-            background: #fff;
-            padding: 15px;
-            border-radius: 15px;
-            border: 1px solid #f2f2f2;
-            margin-bottom: 12px;
+        .menu-body {
+            padding: 1rem;
         }
 
-        .btn-pay {
-            padding: 15px;
-            font-weight: 700;
-            border-radius: 15px;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            border: none;
+        .menu-title {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-price {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .menu-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--border-soft);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .qty-btn:hover {
+            background: var(--bg-soft);
+        }
+
+        .qty-btn.add {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .qty-btn.add:hover {
+            background: #2563eb;
         }
 
         .qty-display {
-            font-weight: 700;
-            min-width: 30px;
+            min-width: 32px;
             text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Cart Card */
+        .cart-card {
+            background: white;
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .cart-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-soft);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h5 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .cart-badge {
+            background: var(--bg-soft);
+            color: var(--text-muted);
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .cart-body {
+            padding: 1rem;
+        }
+
+        .cart-list {
+            max-height: 50vh;
+            overflow-y: auto;
+            min-height: 200px;
+        }
+
+        .cart-item {
+            background: var(--bg-soft);
+            border-radius: 12px;
+            padding: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .cart-item-remove {
+            color: #ef4444;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .cart-item-remove:hover {
+            background: #fef2f2;
+        }
+
+        .cart-item-detail {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-note {
+            width: 100%;
+            border: 1px solid var(--border-soft);
+            border-radius: 8px;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
+            background: white;
+        }
+
+        .cart-item-note:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .cart-footer {
+            border-top: 1px solid var(--border-soft);
+            padding: 1rem;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .cart-total-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .cart-total-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 0.85rem;
+            border-radius: 12px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-checkout:hover:not(:disabled) {
+            background: #2563eb;
+        }
+
+        .btn-checkout:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.4;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-state .spinner-border {
+            width: 2rem;
+            height: 2rem;
+            color: var(--accent);
+        }
+
+        /* Scrollbar */
+        .cart-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .cart-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .cart-list::-webkit-scrollbar-thumb {
+            background: var(--border-soft);
+            border-radius: 4px;
         }
     </style>
 
+    {{-- Header --}}
+    <div class="page-header">
+        <h2><i class="mdi mdi-food me-2"></i>Kantin</h2>
+        <p>Pilih menu dan lakukan pemesanan</p>
+    </div>
+
     <div class="row g-4">
+        {{-- Menu Section --}}
         <div class="col-lg-8">
-            <h3 class="fw-bold text-dark mb-4"><i class="mdi mdi-food-fork-drink me-2"></i> Pilih Menu</h3>
-            <div class="d-flex gap-3 mb-4">
-                <select id="v-select" class="form-select shadow-sm border-0 p-3 flex-grow-1" style="border-radius: 12px;">
-                    <option value="">-- Pilih Kantin / Vendor --</option>
+            {{-- Filter --}}
+            <div class="filter-bar">
+                <select id="v-select">
+                    <option value="">Pilih Vendor</option>
                     @foreach($vendors as $v)
                         <option value="{{ $v->idvendor }}">{{ $v->nama_vendor }}</option>
                     @endforeach
                 </select>
-                <input type="text" id="search-menu" class="form-control shadow-sm border-0 p-3"
-                    style="width: 250px; border-radius: 12px;" placeholder="Cari menu...">
+                <input type="text" id="search-menu" placeholder="Cari menu...">
             </div>
-            <div id="menu-area" class="row"></div>
+
+            {{-- Menu Grid --}}
+            <div id="menu-area" class="row">
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="mdi mdi-store-outline"></i>
+                        <p>Silakan pilih vendor terlebih dahulu</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        {{-- Cart Section --}}
         <div class="col-lg-4">
-            <div class="card shadow-sm border-0 sticky-top" style="top: 90px; border-radius: 20px;">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-4">Keranjang Belanja</h5>
-                    <div id="cart-list" style="min-height: 250px; max-height: 55vh; overflow-y: auto; padding-right: 5px;">
+            <div class="cart-card sticky-top" style="top: 90px;">
+                <div class="cart-header">
+                    <h5><i class="mdi mdi-cart-outline me-1"></i>Keranjang</h5>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </div>
+                <div class="cart-body">
+                    <div class="cart-list" id="cart-list">
+                        <div class="empty-state">
+                            <i class="mdi mdi-cart-off"></i>
+                            <p>Keranjang kosong</p>
+                        </div>
                     </div>
-                    <hr class="my-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="fw-medium text-muted">Total Tagihan</span>
-                        <h4 class="fw-bold text-dark mb-0">Rp <span id="total-val">0</span></h4>
+                </div>
+                <div class="cart-footer">
+                    <div class="cart-total">
+                        <span class="cart-total-label">Total</span>
+                        <span class="cart-total-value">Rp <span id="total-val">0</span></span>
                     </div>
-                    <button id="btn-pay" class="btn btn-primary btn-pay w-100 text-white shadow-sm" disabled>Bayar
-                        Sekarang</button>
+                    <button id="btn-pay" class="btn-checkout" disabled>Bayar Sekarang</button>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- FIX 1: Gunakan config() bukan env() agar tidak null saat di-cache --}}
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -92,11 +407,8 @@
 @push('scripts')
     <script>
         $(function () {
-            // FIX 2: Setup AJAX Header agar CSRF terbaca otomatis
             $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
             });
 
             let cart = [];
@@ -104,67 +416,81 @@
 
             $('#search-menu').on('keyup', function () {
                 let value = $(this).val().toLowerCase();
-                $('.menu-card').parent().filter(function () {
-                    $(this).toggle($(this).find('h6').text().toLowerCase().indexOf(value) > -1)
-                });
+                $('.menu-card').parent().toggle(
+                    $(this).find('.menu-title').text().toLowerCase().indexOf(value) > -1
+                );
             });
 
             $('#v-select').change(function () {
                 let id = $(this).val();
-                if (!id) { $('#menu-area').html('<p class="text-center py-5 text-muted">Silakan pilih vendor</p>'); return; }
-                $('#menu-area').html('<div class="col-12 text-center py-5"><div class="spinner-border text-primary"></div></div>');
+                if (!id) {
+                    $('#menu-area').html('<div class="col-12"><div class="empty-state"><i class="mdi mdi-store-outline"></i><p>Silakan pilih vendor terlebih dahulu</p></div></div>');
+                    return;
+                }
+
+                $('#menu-area').html('<div class="col-12"><div class="loading-state"><div class="spinner-border"></div></div></div>');
+
                 $.get('/kantin/menu/' + id, function (data) {
+                    if (data.length === 0) {
+                        $('#menu-area').html('<div class="col-12"><div class="empty-state"><i class="mdi mdi-food-off"></i><p>Belum ada menu</p></div></div>');
+                        return;
+                    }
+
                     let html = '';
                     data.forEach(m => {
-                        let img = m.path_gambar ? '/storage/' + m.path_gambar : 'https://via.placeholder.com/400x300';
+                        let img = m.path_gambar ? '/storage/' + m.path_gambar : 'https://via.placeholder.com/300x200/f1f5f9/94a3b8?text=No+Image';
                         html += `
-                                <div class="col-md-6 col-xl-4 mb-4">
-                                    <div class="card menu-card shadow-sm h-100">
-                                        <div class="menu-img-container"><img src="${img}"></div>
-                                        <div class="card-body">
-                                            <h6 class="fw-bold mb-1">${m.nama_menu}</h6>
-                                            <div class="text-primary fw-bold">Rp ${Number(m.harga).toLocaleString('id-ID')}</div>
-                                            <div class="d-flex align-items-center gap-2 mt-3">
-                                                <button class="btn btn-light btn-sm rounded-pill qty-minus" data-id="${m.idmenu}">-</button>
-                                                <span class="qty-display" id="qty-${m.idmenu}">0</span>
-                                                <button class="btn btn-primary btn-sm rounded-pill qty-plus" data-id="${m.idmenu}">+</button>
-                                            </div>
+                            <div class="col-md-6 col-xl-4 mb-3">
+                                <div class="menu-card">
+                                    <div class="menu-img"><img src="${img}" alt="${m.nama_menu}" onerror="this.src='https://via.placeholder.com/300x200/f1f5f9/94a3b8?text=No+Image'"></div>
+                                    <div class="menu-body">
+                                        <div class="menu-title">${m.nama_menu}</div>
+                                        <div class="menu-price">Rp ${Number(m.harga).toLocaleString('id-ID')}</div>
+                                        <div class="menu-actions">
+                                            <button class="qty-btn" data-id="${m.idmenu}">−</button>
+                                            <span class="qty-display" id="qty-${m.idmenu}">0</span>
+                                            <button class="qty-btn add" data-id="${m.idmenu}">+</button>
                                         </div>
                                     </div>
-                                </div>`;
+                                </div>
+                            </div>`;
                     });
                     $('#menu-area').html(html);
-                    // Sinkronisasi qty jika ganti vendor tapi barang masih di cart
                     cart.forEach(item => updateQty(item.idmenu));
                 });
             });
 
-            $(document).on('click', '.qty-plus', function () {
+            $(document).on('click', '.qty-btn', function () {
                 let id = Number($(this).data('id'));
-                let cardBody = $(this).closest('.card-body');
-                let nama = cardBody.find('h6').text();
-                let harga = Number(cardBody.find('.text-primary').text().replace(/[^0-9]/g, ''));
+                let isAdd = $(this).hasClass('add');
+                let card = $(this).closest('.menu-card');
+                let nama = card.find('.menu-title').text();
+                let harga = Number(card.find('.menu-price').text().replace(/[^0-9]/g, ''));
 
-                let item = cart.find(i => i.idmenu === id);
-                if (item) item.qty++;
-                else cart.push({ idmenu: id, nama: nama, harga: harga, qty: 1, catatan: '' });
-
-                updateQty(id); renderCart();
-            });
-
-            $(document).on('click', '.qty-minus', function () {
-                let id = Number($(this).data('id'));
                 let item = cart.find(i => i.idmenu === id);
                 if (item) {
-                    if (item.qty > 1) item.qty--;
+                    if (isAdd) item.qty++;
+                    else if (item.qty > 1) item.qty--;
                     else cart = cart.filter(i => i.idmenu !== id);
+                } else if (isAdd) {
+                    cart.push({ idmenu: id, nama: nama, harga: harga, qty: 1, catatan: '' });
                 }
-                updateQty(id); renderCart();
+
+                updateQty(id);
+                renderCart();
             });
 
-            $(document).on('input', '.note-input', function () {
+            $(document).on('input', '.cart-item-note', function () {
                 let idx = $(this).data('idx');
                 cart[idx].catatan = $(this).val();
+            });
+
+            $(document).on('click', '.cart-item-remove', function () {
+                let idx = $(this).data('idx');
+                let id = cart[idx].idmenu;
+                cart.splice(idx, 1);
+                updateQty(id);
+                renderCart();
             });
 
             function updateQty(id) {
@@ -173,81 +499,70 @@
             }
 
             function renderCart() {
-                let html = ''; total = 0;
+                let html = '';
+                total = 0;
+
                 if (cart.length === 0) {
-                    $('#cart-list').html('<div class="text-center py-5 text-muted small">Keranjang kosong</div>');
-                    $('#total-val').text('0'); $('#btn-pay').prop('disabled', true);
+                    $('#cart-list').html('<div class="empty-state"><i class="mdi mdi-cart-off"></i><p>Keranjang kosong</p></div>');
+                    $('#total-val').text('0');
+                    $('#cart-count').text('0');
+                    $('#btn-pay').prop('disabled', true);
                     return;
                 }
+
                 cart.forEach((item, idx) => {
-                    let subtotal = item.harga * item.qty; total += subtotal;
+                    total += item.harga * item.qty;
                     html += `
-                            <div class="cart-item shadow-sm">
-                                <div class="d-flex justify-content-between">
-                                    <div class="fw-bold text-dark small">${item.nama}</div>
-                                    <button class="btn btn-link text-danger p-0 remove-item" data-idx="${idx}"><i class="mdi mdi-close-circle"></i></button>
-                                </div>
-                                <div class="text-muted small mb-2">${item.qty} x Rp ${item.harga.toLocaleString('id-ID')}</div>
-                                <input type="text" class="form-control form-control-sm border-0 note-input" style="background:#f8f9fa; border-radius:8px; font-size:11px;" placeholder="Tambahkan catatan..." data-idx="${idx}" value="${item.catatan || ''}">
-                            </div>`;
+                        <div class="cart-item">
+                            <div class="cart-item-header">
+                                <div class="cart-item-name">${item.nama}</div>
+                                <span class="cart-item-remove" data-idx="${idx}"><i class="mdi mdi-close"></i></span>
+                            </div>
+                            <div class="cart-item-detail">${item.qty} × Rp ${item.harga.toLocaleString('id-ID')}</div>
+                            <input type="text" class="cart-item-note" placeholder="Catatan..." data-idx="${idx}" value="${item.catatan || ''}">
+                        </div>`;
                 });
+
                 $('#cart-list').html(html);
                 $('#total-val').text(total.toLocaleString('id-ID'));
+                $('#cart-count').text(cart.reduce((sum, i) => sum + i.qty, 0));
                 $('#btn-pay').prop('disabled', false);
             }
 
-            $(document).on('click', '.remove-item', function () {
-                let idx = $(this).data('idx');
-                let id = cart[idx].idmenu;
-                cart.splice(idx, 1);
-                updateQty(id); renderCart();
-            });
-
-            // FIX 3: Perbaikan alur Checkout AJAX dan Integrasi Snap
             $('#btn-pay').click(function (e) {
                 e.preventDefault();
                 const btn = $(this);
 
                 if (cart.length === 0 || total === 0) return;
 
-                console.log('Total:', total, 'Cart:', cart);
-
-                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Loading...');
+                btn.prop('disabled', true).text('Memproses...');
 
                 $.ajax({
-                    url: "/kantin/checkout",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        cart: cart,
-                        total_bayar: total
-                    },
+                    url: '/kantin/checkout',
+                    type: 'POST',
+                    data: { _token: "{{ csrf_token() }}", cart: cart, total_bayar: total },
                     success: function (res) {
                         if (res.status === 'success') {
-                            // Memicu jendela pembayaran Midtrans
+                            const orderId = res.order_id;
+                            localStorage.setItem('last_order_id', orderId);
+                            sessionStorage.setItem('last_order_id', orderId);
+
                             window.snap.pay(res.token, {
-                                onSuccess: function (result) {
-                                    Swal.fire('Berhasil!', 'Pembayaran diterima.', 'success').then(() => { location.reload(); });
-                                },
-                                onPending: function (result) {
-                                    Swal.fire('Pending', 'Selesaikan pembayaran di instruksi Midtrans.', 'info').then(() => { location.href = "/pesanan"; });
-                                },
-                                onError: function (result) {
-                                    Swal.fire('Gagal', 'Pembayaran bermasalah.', 'error');
+                                onSuccess: () => window.location.href = '/kantin/sukses?order_id=' + orderId,
+                                onPending: () => window.location.href = '/kantin/sukses?order_id=' + orderId,
+                                onError: () => {
+                                    Swal.fire({ icon: 'error', title: 'Gagal', text: 'Pembayaran gagal.', confirmButtonColor: '#3b82f6' });
                                     btn.prop('disabled', false).text('Bayar Sekarang');
                                 },
-                                onClose: function () {
-                                    Swal.fire('Batal', 'Kamu menutup jendela pembayaran.', 'warning');
-                                    btn.prop('disabled', false).text('Bayar Sekarang');
-                                }
+                                onClose: () => window.location.href = '/kantin/sukses?order_id=' + orderId
                             });
                         } else {
-                            Swal.fire('Error', res.message || 'Gagal membuat transaksi.', 'error');
+                            Swal.fire({ icon: 'error', title: 'Error', text: res.message || 'Gagal.', confirmButtonColor: '#3b82f6' });
                             btn.prop('disabled', false).text('Bayar Sekarang');
                         }
                     },
-                    error: function (xhr) {
-                        Swal.fire('Error', 'Terjadi kesalahan sistem: ' + xhr.statusText, 'error');
+                    error: function () {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan.', confirmButtonColor: '#3b82f6' });
                         btn.prop('disabled', false).text('Bayar Sekarang');
                     }
                 });

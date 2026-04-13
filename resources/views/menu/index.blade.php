@@ -1,100 +1,227 @@
 @extends('layouts.Template')
 
 @section('content')
-<div class="page-header">
-    <h3 class="page-title fw-bold">
-        <span class="page-title-icon bg-gradient-info text-white me-2 shadow-sm">
-            <i class="mdi mdi-food"></i>
-        </span> Master Menu Makanan
-    </h3>
-</div>
+    <style>
+        :root {
+            --border-soft: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dark: #1e293b;
+            --accent: #3b82f6;
+            --bg-soft: #f8fafc;
+        }
 
-<div class="row">
-    {{-- Form Input Menu (Susunan ke bawah) --}}
-    <div class="col-md-5 grid-margin stretch-card">
-        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
-            <div class="card-body">
-                <h4 class="card-title mb-4">Input Menu Baru</h4>
-                <form class="forms-sample" action="{{ route('admin.menu.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    
-                    <div class="form-group mb-3">
-                        <label class="fw-bold">Nama Menu</label>
-                        <input type="text" name="nama_menu" class="form-control form-control-lg border-light" 
-                               style="background: #f8f9fa; border-radius: 10px;" placeholder="Masukkan nama makanan/minuman..." required>
-                    </div>
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-soft);
+        }
 
-                    <div class="form-group mb-3">
-                        <label class="fw-bold">Harga</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-info text-white border-0" style="border-radius: 10px 0 0 10px;">Rp</span>
-                            <input type="number" name="harga" class="form-control form-control-lg border-light" 
-                                   style="background: #f8f9fa; border-radius: 0 10px 10px 0;" placeholder="0" required>
-                        </div>
-                    </div>
+        .page-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
 
-                    <div class="form-group mb-3">
-                        <label class="fw-bold">Vendor Pemilik</label>
-                        <select name="idvendor" class="form-select form-select-lg border-light" 
-                                style="background: #f8f9fa; border-radius: 10px;" required>
-                            <option value="">Pilih Vendor...</option>
-                            @foreach($vendors as $v)
-                                <option value="{{ $v->idvendor }}">{{ $v->nama_vendor }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+        .card {
+            background: white;
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+        }
 
-                    <div class="form-group mb-4">
-                        <label class="fw-bold">Foto Menu</label>
-                        <input type="file" name="gambar" class="form-control border-light" 
-                               style="background: #f8f9fa; border-radius: 10px;" accept="image/*">
-                        <small class="text-muted mt-1 d-block italic">*Gunakan foto rasio 1:1 untuk hasil terbaik</small>
-                    </div>
+        .card-body {
+            padding: 1.5rem;
+        }
 
-                    <button type="submit" class="btn btn-gradient-info btn-lg w-100 fw-bold shadow-sm" style="border-radius: 10px;">
-                        <i class="mdi mdi-plus-circle me-2"></i>Simpan Menu
-                    </button>
-                </form>
-            </div>
-        </div>
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--border-soft);
+            border-radius: 8px;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-group-text {
+            background: var(--accent);
+            color: white;
+            border: 1px solid var(--accent);
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group .form-control {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .btn {
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: var(--bg-soft);
+        }
+
+        .data-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .data-table td {
+            padding: 0.85rem 1rem;
+            border-top: 1px solid var(--border-soft);
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-soft);
+        }
+
+        .menu-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .vendor-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .price-text {
+            color: #166534;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="page-header">
+        <h2><i class="mdi mdi-food me-2"></i>Master Menu</h2>
     </div>
 
-    {{-- Tabel Katalog Menu --}}
-    <div class="col-md-7 grid-margin stretch-card">
-        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
-            <div class="card-body">
-                <h4 class="card-title">Katalog Menu Saat Ini</h4>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="bg-light">
+    <div class="row g-4">
+        {{-- Form Input --}}
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Tambah Menu</h4>
+                    <form action="{{ route('admin.menu.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label class="form-label">Nama Menu</label>
+                            <input type="text" name="nama_menu" class="form-control" placeholder="Nama makanan/minuman" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Harga</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="harga" class="form-control" placeholder="0" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Vendor</label>
+                            <select name="idvendor" class="form-select" required>
+                                <option value="">Pilih Vendor</option>
+                                @foreach($vendors as $v)
+                                    <option value="{{ $v->idvendor }}">{{ $v->nama_vendor }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Foto</label>
+                            <input type="file" name="gambar" class="form-control" accept="image/*">
+                            <small class="text-muted">Rasio 1:1 direkomendasikan</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="mdi mdi-plus me-1"></i> Simpan Menu
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Daftar Menu --}}
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Daftar Menu</h4>
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <th class="border-0">Foto</th>
-                                <th class="border-0">Nama Menu</th>
-                                <th class="border-0">Vendor</th>
-                                <th class="border-0 text-end pe-4">Harga</th>
+                                <th width="60">Foto</th>
+                                <th>Nama Menu</th>
+                                <th>Vendor</th>
+                                <th width="100" class="text-end">Harga</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($menus as $m)
                             <tr>
-                                <td class="py-3">
-                                    <img src="{{ $m->path_gambar ? asset('storage/' . $m->path_gambar) : 'https://via.placeholder.com/60' }}" 
-                                         class="rounded-3 shadow-sm" style="width: 55px; height: 55px; object-fit: cover;">
-                                </td>
                                 <td>
-                                    <span class="font-weight-bold text-dark d-block">{{ $m->nama_menu }}</span>
+                                    <img src="{{ $m->path_gambar ? asset('storage/' . $m->path_gambar) : 'https://via.placeholder.com/60' }}" class="menu-img">
                                 </td>
-                                <td>
-                                    <span class="badge badge-outline-info px-2 py-1" style="font-size: 0.75rem;">
-                                        {{ $m->vendor->nama_vendor ?? '-' }}
-                                    </span>
-                                </td>
-                                <td class="text-end pe-4 fw-bold text-success">
-                                    Rp {{ number_format($m->harga, 0, ',', '.') }}
-                                </td>
+                                <td><span class="fw-bold">{{ $m->nama_menu }}</span></td>
+                                <td><span class="vendor-badge">{{ $m->vendor->nama_vendor ?? '-' }}</span></td>
+                                <td class="text-end"><span class="price-text">{{ number_format($m->harga, 0, ',', '.') }}</span></td>
                             </tr>
                             @empty
-                            <tr><td colspan="4" class="text-center py-5 text-muted">Belum ada menu terdaftar.</td></tr>
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Belum ada menu</td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -102,5 +229,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

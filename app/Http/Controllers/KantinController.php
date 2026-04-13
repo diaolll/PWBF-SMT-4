@@ -44,7 +44,7 @@ public function retry($order_id)
         $total += $d->subtotal;
     }
 
-    $newOrderId = 'INV-' . date('ymd-His') . '-' . rand(100,999);
+    $newOrderId = 'INV-' . $pesanan->idpesanan;
 
     $pesanan->update([
         'order_id' => $newOrderId,
@@ -113,6 +113,7 @@ public function checkout(Request $request)
             }
 
             $pesanan = Pesanan::create([
+                'nama'         => auth()->user()->name ?? 'Customer',
                 'total'        => $total,
                 'status_bayar' => 0,
                 'metode_bayar' => 0,
@@ -146,9 +147,24 @@ public function checkout(Request $request)
                     'first_name' => auth()->user()->name ?? 'Customer',
                 ],
 
-                // 🔥 INI WAJIB
+                // Semua payment method yang available
+                'enabled_payments' => [
+                    'qris',          // QR Code untuk studi kasus
+                    'gopay',
+                    'shopeepay',
+                    'bank_transfer',
+                    'permata',
+                    'bca_va',
+                    'bni_va',
+                    'bri_va',
+                    'mandiri_bill',
+                    'alfamart',
+                    'indomaret',
+                ],
+
+                // Callback URLs — include order_id di finish URL
                 'callbacks' => [
-                    'finish'   => url('/kantin/sukses'),
+                    'finish'   => url('/kantin/sukses?order_id=') . $orderId,
                     'unfinish' => url('/kantin'),
                     'error'    => url('/kantin'),
                 ],
@@ -160,9 +176,13 @@ public function checkout(Request $request)
                 'snap_token' => $snapToken
             ]);
 
+            // Simpan order_id di session untuk redirect setelah pembayaran
+            session(['last_order_id' => $orderId]);
+
             return response()->json([
-                'status' => 'success',
-                'token'  => $snapToken
+                'status'   => 'success',
+                'token'    => $snapToken,
+                'order_id' => $orderId  // ← kirim order_id ke frontend
             ]);
         });
 
@@ -177,8 +197,17 @@ public function checkout(Request $request)
     }
 }
 
-    public function sukses()
+    /**
+     * Halaman sukses setelah pembayaran
+     */
+    public function sukses($idpesanan = null)
     {
-        return view('kantin.sukses');
+        $pesanan = null;
+
+        if ($idpesanan) {
+            $pesanan = Pesanan::with('details.menu')->find($idpesanan);
+        }
+
+        return view('kantin.sukses', compact('pesanan'));
     }
 }

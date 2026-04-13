@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Barang;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class BarangController extends Controller
 {
@@ -98,17 +99,46 @@ class BarangController extends Controller
         $startX = (int) $request->input('x', 1);
         $startY = (int) $request->input('y', 1);
 
-        // Notifikasi Error jika belum pilih barang (Muncul di Index)
         if (empty($ids)) {
             return redirect()->back()->with('error', 'Pilih minimal satu barang yang ingin dicetak!');
         }
 
         $selectedBarang = Barang::whereIn('id_barang', $ids)->get();
         $skipCount = (($startY - 1) * 5) + ($startX - 1);
-        
-        $pdf = Pdf::loadView('barang.pdf', compact('selectedBarang', 'skipCount'))
+
+        // Generate barcode untuk setiap barang
+        $generator = new BarcodeGeneratorPNG();
+        $barcodes = [];
+        foreach ($selectedBarang as $item) {
+            $barcodes[$item->id_barang] = base64_encode(
+                $generator->getBarcode($item->id_barang, $generator::TYPE_CODE_128)
+            );
+        }
+
+        $pdf = Pdf::loadView('barang.pdf', compact('selectedBarang', 'skipCount', 'barcodes'))
                   ->setPaper('a4', 'portrait');
 
         return $pdf->stream('Tag-Harga-TnJ108.pdf');
+    }
+
+    /**
+     * Cetak tag harga untuk barang tertentu
+     */
+    public function cetakTagHarga($id)
+    {
+        $barang = \DB::table('barang')->where('id_barang', $id)->first();
+
+        // Generate barcode dari id_barang
+        $generator = new BarcodeGeneratorPNG();
+        $barcode = base64_encode(
+            $generator->getBarcode($barang->id_barang, $generator::TYPE_CODE_128)
+        );
+
+        $pdf = Pdf::loadView('barang.tag-harga', [
+            'barang'  => $barang,
+            'barcode' => $barcode,
+        ]);
+
+        return $pdf->stream('tag-harga-' . $barang->id_barang . '.pdf');
     }
 }

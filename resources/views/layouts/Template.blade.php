@@ -367,6 +367,37 @@
     </div>
 </li>
 
+{{-- ===================== --}}
+{{-- MODUL 7 - CUSTOMER --}}
+{{-- ===================== --}}
+<li class="nav-item">
+    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul7"
+       aria-expanded="false" aria-controls="ui-modul7">
+        <span class="menu-title">Modul 7</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-account-multiple menu-icon text-info"></i>
+    </a>
+    <div class="collapse" id="ui-modul7">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('/customer') }}">
+                    Data Customer
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('/customer/tambah1') }}">
+                    Form Tambah 1
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('/customer/tambah2') }}">
+                    Form Tambah 2
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
             </ul>
         </nav>
         {{-- ===== END SIDEBAR ===== --}}

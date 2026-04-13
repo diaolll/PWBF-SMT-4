@@ -79,7 +79,6 @@
                     @if ($currentCell >= $skipCount && $itemIndex < count($selectedBarang))
                         @php $b = $selectedBarang[$itemIndex]; @endphp
                         <td>
-                            {{-- Barcode di atas nama --}}
                             @if(isset($barcodes[$b->id_barang]))
                                 <div class="barcode">
                                     <img src="data:image/png;base64,{{ $barcodes[$b->id_barang] }}">

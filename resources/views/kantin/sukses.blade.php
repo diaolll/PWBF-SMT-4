@@ -93,6 +93,61 @@
             color: var(--success);
         }
 
+        /* Item List Styles */
+        .items-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .items-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed var(--border-soft);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            flex: 1;
+        }
+
+        .item-qty {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-right: 1rem;
+        }
+
+        .item-price {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .empty-items {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
         .qr-section {
             border: 1px dashed var(--border-soft);
             border-radius: 12px;
@@ -141,22 +196,44 @@
             <p class="success-subtitle">Terima kasih {{ $pesanan->nama ?? 'Customer' }}, pesanan sedang diproses</p>
 
             @if($pesanan)
+            {{-- Order Details --}}
             <div class="success-details">
                 <div class="detail-row">
                     <span class="detail-label">Order ID</span>
                     <span class="detail-value">{{ $pesanan->order_id ?? '-' }}</span>
                 </div>
                 <div class="detail-row">
+                    <span class="detail-label">Nama</span>
+                    <span class="detail-value">{{ $pesanan->nama ?? 'Customer' }}</span>
+                </div>
+                <div class="detail-row">
                     <span class="detail-label">Total</span>
                     <span class="detail-value total">Rp {{ number_format($pesanan->total ?? 0, 0, ',', '.') }}</span>
                 </div>
             </div>
+
+            {{-- Items Purchased --}}
+            <div class="items-section">
+                <p class="items-title">Item yang Dibeli</p>
+                @if($pesanan->details && $pesanan->details->count() > 0)
+                    @foreach($pesanan->details as $detail)
+                        <div class="item-row">
+                            <span class="item-name">{{ $detail->menu->nama ?? 'Menu' }}</span>
+                            <span class="item-qty">{{ $detail->jumlah }}x</span>
+                            <span class="item-price">Rp {{ number_format($detail->subtotal ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                    @endforeach
+                @else
+                    <p class="empty-items">Tidak ada item dalam pesanan</p>
+                @endif
+            </div>
             @endif
 
             <div class="qr-section">
-                <p class="qr-label">Tunjukkan QR Code ini ke kasir</p>
+                <p class="qr-label">Scan QR Code untuk melihat detail pesanan</p>
                 @if($qrBase64 ?? false)
                     <img src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
+                    <p class="text-muted small mt-2">atau tunjukkan ke kasir</p>
                 @else
                     <p class="text-danger small">QR Code tidak tersedia</p>
                 @endif

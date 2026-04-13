@@ -212,8 +212,9 @@ class PaymentController extends Controller
             return redirect()->route('kantin.index')->with('error', 'Pesanan tidak ditemukan');
         }
 
-        // QR Code berisi idpesanan — untuk verifikasi ke kasir
-        $qrCode   = new QrCode((string) $pesanan->idpesanan);
+        // QR Code berisi URL ke detail pesanan — jadi saat discan langsung buka detail
+        $qrUrl    = url('/pesanan/detail/' . $pesanan->order_id);
+        $qrCode   = new QrCode($qrUrl);
         $writer   = new PngWriter();
         $result   = $writer->write($qrCode);
         $qrBase64 = base64_encode($result->getString());

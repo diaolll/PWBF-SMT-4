@@ -20,6 +20,14 @@ class BarangController extends Controller
     }
 
     /**
+     * Halaman Barcode Scanner
+     */
+    public function scan()
+    {
+        return view('barang.scan');
+    }
+
+    /**
      * Menyimpan data barang baru
      */
     public function store(Request $request)

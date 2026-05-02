@@ -2,247 +2,127 @@
 
 @section('content')
     <style>
-        :root {
-            --border-soft: #e2e8f0;
-            --text-muted: #64748b;
-            --text-dark: #1e293b;
-            --success: #10b981;
-            --success-light: #d1fae5;
-        }
-
-        .success-page {
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        .success-card {
-            background: white;
-            border: 1px solid var(--border-soft);
-            border-radius: 20px;
-            padding: 2.5rem;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .success-icon {
-            width: 72px;
-            height: 72px;
-            background: var(--success-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-        }
-
-        .success-icon i {
-            font-size: 2.5rem;
-            color: var(--success);
-        }
-
-        .success-title {
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .success-subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
-
-        .success-details {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: left;
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-soft);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .detail-value {
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--text-dark);
-        }
-
-        .detail-value.total {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--success);
-        }
-
-        /* Item List Styles */
-        .items-section {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: left;
-            margin-bottom: 1.5rem;
-        }
-
-        .items-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.6rem 0;
-            border-bottom: 1px dashed var(--border-soft);
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-name {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            flex: 1;
-        }
-
-        .item-qty {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-right: 1rem;
-        }
-
-        .item-price {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-dark);
-        }
-
-        .empty-items {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            padding: 1rem;
-        }
-
-        .qr-section {
-            border: 1px dashed var(--border-soft);
-            border-radius: 12px;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .qr-label {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .qr-section img {
-            border-radius: 8px;
-            max-width: 160px;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--text-dark);
-            color: white;
-            border-radius: 10px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .btn-back:hover {
-            background: #334155;
-            color: white;
-        }
+        .success-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+        .success-icon i { font-size: 3rem; }
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #eaeaec; }
+        .detail-row:last-child { border-bottom: none; }
+        .qr-box { border: 2px dashed #eaeaec; border-radius: 12px; padding: 20px; display: inline-block; }
+        .qr-box img { border-radius: 8px; max-width: 180px; }
     </style>
 
-    <div class="success-page">
-        <div class="success-card">
-            <div class="success-icon">
-                <i class="mdi mdi-check"></i>
-            </div>
+    <div class="page-header">
+        <h3 class="page-title">
+            <span class="page-title-icon bg-gradient-success text-white me-2">
+                <i class="mdi mdi-check-circle"></i>
+            </span> Pembayaran Berhasil
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('kantin.index') }}">Kantin</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Sukses</li>
+            </ul>
+        </nav>
+    </div>
 
-            <h3 class="success-title">Pembayaran Berhasil</h3>
-            <p class="success-subtitle">Terima kasih {{ $pesanan->nama ?? 'Customer' }}, pesanan sedang diproses</p>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="success-icon">
+                        <i class="mdi mdi-check"></i>
+                    </div>
 
-            @if($pesanan)
-            {{-- Order Details --}}
-            <div class="success-details">
-                <div class="detail-row">
-                    <span class="detail-label">Order ID</span>
-                    <span class="detail-value">{{ $pesanan->order_id ?? '-' }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Nama</span>
-                    <span class="detail-value">{{ $pesanan->nama ?? 'Customer' }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Total</span>
-                    <span class="detail-value total">Rp {{ number_format($pesanan->total ?? 0, 0, ',', '.') }}</span>
-                </div>
-            </div>
+                    <h3 class="card-title mb-1">Pembayaran Berhasil!</h3>
+                    <p class="text-muted mb-4">Terima kasih {{ $pesanan->nama ?? 'Customer' }}, pesanan sedang diproses</p>
 
-            {{-- Items Purchased --}}
-            <div class="items-section">
-                <p class="items-title">Item yang Dibeli</p>
-                @if($pesanan->details && $pesanan->details->count() > 0)
-                    @foreach($pesanan->details as $detail)
-                        <div class="item-row">
-                            <span class="item-name">{{ $detail->menu->nama ?? 'Menu' }}</span>
-                            <span class="item-qty">{{ $detail->jumlah }}x</span>
-                            <span class="item-price">Rp {{ number_format($detail->subtotal ?? 0, 0, ',', '.') }}</span>
+                    @if($pesanan)
+                    {{-- Order Details --}}
+                    <div class="bg-light p-4 rounded mb-4">
+                        <div class="detail-row">
+                            <span class="text-muted">Order ID</span>
+                            <span class="font-weight-bold">{{ $pesanan->order_id ?? '-' }}</span>
                         </div>
-                    @endforeach
-                @else
-                    <p class="empty-items">Tidak ada item dalam pesanan</p>
-                @endif
-            </div>
-            @endif
+                        <div class="detail-row">
+                            <span class="text-muted">Nama</span>
+                            <span>{{ $pesanan->nama ?? 'Customer' }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="text-muted">Total</span>
+                            <span class="text-success font-weight-bold" style="font-size: 1.2rem;">Rp {{ number_format($pesanan->total ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
 
-            <div class="qr-section">
-                <p class="qr-label">Scan QR Code untuk melihat detail pesanan</p>
-                @if($qrBase64 ?? false)
-                    <img src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
-                    <p class="text-muted small mt-2">atau tunjukkan ke kasir</p>
-                @else
-                    <p class="text-danger small">QR Code tidak tersedia</p>
-                @endif
-            </div>
+                    {{-- Items --}}
+                    @if($pesanan->details && $pesanan->details->count() > 0)
+                    <div class="mb-4">
+                        <h6 class="text-start mb-3">Item yang Dibeli</h6>
+                        <div class="bg-light p-3 rounded">
+                            @foreach($pesanan->details as $detail)
+                            <div class="detail-row">
+                                <span>{{ $detail->menu->nama ?? 'Menu' }}</span>
+                                <span>{{ $detail->jumlah }}x × Rp {{ number_format($detail->subtotal ?? 0, 0, ',', '.') }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    @endif
 
-            <a href="{{ route('kantin.index') }}" class="btn-back">
-                <i class="mdi mdi-arrow-left"></i>
-                Kembali ke Kantin
-            </a>
+                    {{-- QR Code --}}
+                    <div class="qr-box mb-4">
+                        <p class="text-muted small mb-3">Scan QR Code untuk melihat detail pesanan</p>
+                        @if($qrBase64 ?? false)
+                        <img id="qrImage" src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
+                        <p class="text-muted small mt-2">atau tunjukkan ke kasir</p>
+                        @else
+                        <p class="text-danger small">QR Code tidak tersedia</p>
+                        @endif
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="{{ route('kantin.orders') }}" class="btn btn-gradient-primary btn-rounded">
+                            <i class="mdi mdi-history"></i> Pesanan Saya
+                        </a>
+                        <a href="{{ route('kantin.index') }}" class="btn btn-gradient-light btn-rounded">
+                            <i class="mdi mdi-arrow-left"></i> Kembali
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if($pesanan)
+            saveOrderToStorage();
+            @endif
+        });
+
+        function saveOrderToStorage() {
+            const orderData = {
+                order_id: '{{ $pesanan->order_id ?? '' }}',
+                idpesanan: '{{ $pesanan->idpesanan ?? '' }}',
+                nama: '{{ $pesanan->nama ?? 'Customer' }}',
+                total: {{ $pesanan->total ?? 0 }},
+                status_bayar: {{ $pesanan->status_bayar ?? 0 }},
+                metode_bayar: {{ $pesanan->metode_bayar ?? 0 }},
+                qrBase64: document.getElementById('qrImage')?.src || '',
+                timestamp: new Date().toISOString(),
+                items: [
+                    @if($pesanan->details && $pesanan->details->count() > 0)
+                        @foreach($pesanan->details as $detail)
+                        { nama: '{{ $detail->menu->nama ?? 'Menu' }}', jumlah: {{ $detail->jumlah ?? 0 }}, subtotal: {{ $detail->subtotal ?? 0 }} },
+                        @endforeach
+                    @endif
+                ]
+            };
+            let orders = JSON.parse(localStorage.getItem('kantin_orders') || '[]');
+            // Remove duplicate and add new
+            orders = orders.filter(o => o.order_id !== orderData.order_id);
+            orders.unshift(orderData);
+            if (orders.length > 20) orders = orders.slice(0, 20);
+            localStorage.setItem('kantin_orders', JSON.stringify(orders));
+        }
+    </script>
 @endsection

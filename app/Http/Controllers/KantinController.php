@@ -23,6 +23,15 @@ class KantinController extends Controller
         );
     }
 
+    /**
+     * Halaman Pesanan Saya (My Orders)
+     * Menampilkan riwayat pesanan dari localStorage
+     */
+    public function orders()
+    {
+        return view('kantin.orders');
+    }
+
 public function retry($order_id)
 {
     $pesanan = Pesanan::where('order_id', $order_id)->firstOrFail();

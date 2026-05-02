@@ -13,9 +13,6 @@ use Endroid\QrCode\Writer\PngWriter;
 
 class PaymentController extends Controller
 {
-    /**
-     * Helper untuk memetakan payment_type Midtrans ke ID Integer database
-     */
     private function mapMetodeBayar($paymentType)
     {
         $map = [
@@ -123,6 +120,48 @@ class PaymentController extends Controller
                     ->firstOrFail();
 
         return view('pesanan.detail', compact('pesanan'));
+    }
+
+    /**
+     * API: Mendapatkan data pesanan untuk QR Code Scanner
+     * GET /api/pesanan/{order_id}
+     */
+    public function getPesanan($order_id)
+    {
+        $pesanan = Pesanan::with('details.menu')
+                    ->where('order_id', $order_id)
+                    ->first();
+
+        if (!$pesanan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan tidak ditemukan'
+            ], 404);
+        }
+
+        // Format items
+        $items = [];
+        foreach ($pesanan->details as $detail) {
+            $items[] = [
+                'nama' => $detail->menu->nama_menu ?? 'Menu',
+                'jumlah' => $detail->jumlah,
+                'harga' => $detail->harga,
+                'subtotal' => 'Rp ' . number_format($detail->subtotal, 0, ',', '.'),
+                'metode_bayar' => $pesanan->metode_bayar
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'order_id' => $pesanan->order_id,
+                'nama' => $pesanan->nama,
+                'total' => $pesanan->total,
+                'status_bayar' => $pesanan->status_bayar,
+                'metode_bayar' => $pesanan->metode_bayar,
+                'items' => $items
+            ]
+        ]);
     }
 
     /**

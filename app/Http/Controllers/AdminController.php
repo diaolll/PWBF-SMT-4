@@ -33,11 +33,19 @@ class AdminController extends Controller
     public function pesanan()
     {
         // Hapus filter where status_bayar 1 agar pesanan yang masih '0' (Pending) tetap muncul
-        $pesanan = Pesanan::with(['details.menu']) 
-                    ->latest('idpesanan')    
+        $pesanan = Pesanan::with(['details.menu'])
+                    ->latest('idpesanan')
                     ->get();
 
         return view('pesanan.index', compact('pesanan'));
+    }
+
+    /**
+     * Halaman QR Code Scanner untuk Vendor
+     */
+    public function scan()
+    {
+        return view('vendor.scan');
     }
 
     /**

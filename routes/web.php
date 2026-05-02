@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('barang')->name('barang.')->group(function () {
         Route::get('/', [BarangController::class, 'index'])->name('index');
+        Route::get('/scan', [BarangController::class, 'scan'])->name('scan');
         Route::post('/', [BarangController::class, 'store'])->name('store');
         Route::delete('/{id}', [BarangController::class, 'destroy'])->name('destroy');
         Route::post('/generate-pdf', [BarangController::class, 'generatePDF'])->name('pdf');
@@ -89,12 +90,14 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('kantin')->name('kantin.')->group(function () {
         Route::get('/', [KantinController::class, 'index'])->name('index');
         Route::get('/menu/{id}', [KantinController::class, 'menu'])->name('menu');
+        Route::get('/orders', [KantinController::class, 'orders'])->name('orders');
         Route::post('/checkout', [KantinController::class, 'checkout'])->name('checkout');
         Route::get('/sukses', [PaymentController::class, 'sukses'])->name('sukses'); // ← PaymentController
     });
 
     Route::get('/vendor', [AdminController::class, 'vendor'])->name('admin.vendor.index');
     Route::post('/vendor', [AdminController::class, 'storeVendor'])->name('admin.vendor.store');
+    Route::get('/vendor/qrcode', [AdminController::class, 'scan'])->name('admin.vendor.qrcode');
 
     Route::get('/menu', [AdminController::class, 'menu'])->name('admin.menu.index');
     Route::post('/menu', [AdminController::class, 'storeMenu'])->name('admin.menu.store');
@@ -102,6 +105,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pesanan', [AdminController::class, 'pesanan'])->name('admin.pesanan.index');
     // Route untuk melihat detail pesanan lunas
     Route::get('/pesanan/detail/{order_id}', [App\Http\Controllers\PaymentController::class, 'show'])->name('pesanan.detail');
+    // API untuk mendapatkan data pesanan berdasarkan order_id (untuk QR Scanner)
+    Route::get('/api/pesanan/{order_id}', [App\Http\Controllers\PaymentController::class, 'getPesanan'])->name('api.pesanan');
 
     // ← Cek status manual dari Midtrans (jurus pamungkas)
     Route::get('/pesanan/check/{order_id}', [PaymentController::class, 'checkStatus'])->name('pesanan.check');
@@ -111,11 +116,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    /*
-    |--------------------------------------------------------------------------
-    | MODUL 7: CUSTOMER
-    |--------------------------------------------------------------------------
-    */
     Route::prefix('customer')->name('customer.')->group(function () {
         Route::get('/',         [CustomerController::class, 'index'])->name('index');
         Route::get('/tambah1',  [CustomerController::class, 'tambah1'])->name('tambah1');

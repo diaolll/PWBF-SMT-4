@@ -185,7 +185,7 @@
     {{-- ===== PAGE BODY ===== --}}
     <div class="container-fluid page-body-wrapper">
 
-{{-- ===== SIDEBAR ===== --}}
+        {{-- ===== SIDEBAR ===== --}}
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
 
@@ -235,7 +235,7 @@
                        aria-expanded="false" aria-controls="ui-pdf-gen">
                         <span class="menu-title">Generate Dokumen</span>
                         <i class="menu-arrow"></i>
-                        <i class="mdi mdi-file-pdf menu-icon text-danger"></i>
+                        <i class="mdi mdi-file-pdf menu-icon"></i>
                     </a>
                     <div class="collapse" id="ui-pdf-gen">
                         <ul class="nav flex-column sub-menu">
@@ -268,6 +268,14 @@
                     </a>
                 </li>
 
+                {{-- Barcode Scanner --}}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/barang/scan') }}">
+                        <span class="menu-title">Barcode Scanner</span>
+                        <i class="mdi mdi-barcode-scan menu-icon"></i>
+                    </a>
+                </li>
+
                 {{-- Modul 4 --}}
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul4"
@@ -288,11 +296,6 @@
                                     Select Kota
                                 </a>
                             </li>
-                            <!-- <li class="nav-item">
-                                <a class="nav-link" href="{{ url('/modul/tabel-html') }}">
-                                    Tabel HTML
-                                </a>
-                            </li> -->
                         </ul>
                     </div>
                 </li>
@@ -320,87 +323,83 @@
                         </ul>
                     </div>
                 </li>
-            
-{{-- ===================== --}}
-{{-- MODUL 6 - KANTIN SYSTEM --}}
-{{-- ===================== --}}
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul6"
-       aria-expanded="false" aria-controls="ui-modul6">
-        <span class="menu-title">Modul 6</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-store menu-icon"></i>
-    </a>
 
-    <div class="collapse" id="ui-modul6">
-        <ul class="nav flex-column sub-menu">
+                {{-- Modul 6 - Kantin System --}}
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul6"
+                       aria-expanded="false" aria-controls="ui-modul6">
+                        <span class="menu-title">Modul 6</span>
+                        <i class="menu-arrow"></i>
+                        <i class="mdi mdi-store menu-icon"></i>
+                    </a>
+                    <div class="collapse" id="ui-modul6">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('kantin.index') }}">
+                                    Kantin (Frontend)
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.vendor.index') }}">
+                                    Master Vendor
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.menu.index') }}">
+                                    Master Menu
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.pesanan.index') }}">
+                                    Pesanan Kantin
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.vendor.qrcode') }}">
+                                    QR Scanner (Vendor)
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('kantin.orders') }}">
+                                    Pesanan Saya
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
-            {{-- Frontend Kantin --}}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('kantin.index') }}">
-                    Kantin (Frontend)
-                </a>
-            </li>
-
-            {{-- Master Vendor (URL disamakan dengan web.php) --}}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.vendor.index') }}">
-                    Master Vendor
-                </a>
-            </li>
-
-            {{-- Master Menu (URL disamakan dengan web.php) --}}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.menu.index') }}">
-                    Master Menu
-                </a>
-            </li>
-
-            {{-- Pesanan Kantin (URL disamakan dengan web.php) --}}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.pesanan.index') }}">
-                    Pesanan Kantin
-                </a>
-            </li>
-
-        </ul>
-    </div>
-</li>
-
-{{-- ===================== --}}
-{{-- MODUL 7 - CUSTOMER --}}
-{{-- ===================== --}}
-<li class="nav-item">
-    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul7"
-       aria-expanded="false" aria-controls="ui-modul7">
-        <span class="menu-title">Modul 7</span>
-        <i class="menu-arrow"></i>
-        <i class="mdi mdi-account-multiple menu-icon text-info"></i>
-    </a>
-    <div class="collapse" id="ui-modul7">
-        <ul class="nav flex-column sub-menu">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url('/customer') }}">
-                    Data Customer
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url('/customer/tambah1') }}">
-                    Form Tambah 1
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url('/customer/tambah2') }}">
-                    Form Tambah 2
-                </a>
-            </li>
-        </ul>
-    </div>
-</li>
+                {{-- Modul 7 - Customer --}}
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul7"
+                       aria-expanded="false" aria-controls="ui-modul7">
+                        <span class="menu-title">Modul 7</span>
+                        <i class="menu-arrow"></i>
+                        <i class="mdi mdi-account-multiple menu-icon"></i>
+                    </a>
+                    <div class="collapse" id="ui-modul7">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/customer') }}">
+                                    Data Customer
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/customer/tambah1') }}">
+                                    Form Tambah 1
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/customer/tambah2') }}">
+                                    Form Tambah 2
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
             </ul>
         </nav>
-        {{-- ===== END SIDEBAR ===== --}}
+        {{-- ===== END SIDEBAR ===== }}
 
         {{-- ===== MAIN PANEL ===== --}}
         <div class="main-panel">
@@ -447,6 +446,65 @@
 
 {{-- Stack scripts dari child views (@push('scripts') di masing-masing blade) --}}
 @stack('scripts')
+
+		{{-- Fix sidebar active state --}}
+		<script>
+			$(document).ready(function() {
+				var currentPath = window.location.pathname;
+
+				// Remove all active classes first
+				$('.sidebar .nav-item').removeClass('active');
+				$('.sidebar .collapse').removeClass('show');
+
+				// Modul 6 - Kantin System
+				if (currentPath === '/kantin' || currentPath.startsWith('/kantin')) {
+					$('#ui-modul6').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/kantin"]').addClass('active');
+				}
+				else if (currentPath.startsWith('/admin/vendor') && !currentPath.includes('/qrcode')) {
+					$('#ui-modul6').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/admin/vendor"]').addClass('active');
+				}
+				else if (currentPath.startsWith('/admin/menu')) {
+					$('#ui-modul6').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/admin/menu"]').addClass('active');
+				}
+				else if (currentPath.startsWith('/admin/pesanan')) {
+					$('#ui-modul6').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/admin/pesanan"]').addClass('active');
+				}
+				else if (currentPath === '/vendor/qrcode' || currentPath.includes('/admin/vendor/qrcode')) {
+					$('#ui-modul6').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/vendor/qrcode"]').addClass('active');
+				}
+
+				// Barang
+				else if (currentPath === '/barang' || currentPath === '/barang/') {
+					$('.sidebar .nav-item').has('a[href="/barang"]').addClass('active');
+				}
+				// Barcode Scanner
+				else if (currentPath === '/barang/scan' || currentPath.startsWith('/barang/scan')) {
+					$('.sidebar .nav-item').has('a[href*="/barang/scan"]').addClass('active');
+				}
+
+				// Modul 7 - Customer
+				else if (currentPath === '/customer' || currentPath.startsWith('/customer')) {
+					$('#ui-modul7').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/customer"]').addClass('active');
+				}
+
+				// Modul 4
+				else if (currentPath.startsWith('/modul/table') || currentPath.startsWith('/modul/select')) {
+					$('#ui-modul4').addClass('show');
+				}
+
+				// Modul 5
+				else if (currentPath.startsWith('/wilayah') || currentPath.startsWith('/pos')) {
+					$('#ui-modul5').addClass('show');
+				}
+			});
+		</script>
+
 
 </body>
 </html>

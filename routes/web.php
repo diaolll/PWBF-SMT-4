@@ -16,6 +16,8 @@ use App\Http\Controllers\KantinController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\KunjunganTokoController;
+
 
 
 
@@ -122,6 +124,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tambah1', [CustomerController::class, 'store1'])->name('store1');
         Route::get('/tambah2',  [CustomerController::class, 'tambah2'])->name('tambah2');
         Route::post('/tambah2', [CustomerController::class, 'store2'])->name('store2');
+    });
+
+    Route::prefix('kunjungan-toko')->name('kunjungan-toko.')->group(function () {
+    Route::get('/',                     [KunjunganTokoController::class, 'index'])->name('index');
+    Route::post('/toko',                [KunjunganTokoController::class, 'storeToko'])->name('toko.store');
+    Route::delete('/toko/{barcode}',    [KunjunganTokoController::class, 'destroyToko'])->name('toko.destroy');
+    Route::get('/toko/{barcode}',       [KunjunganTokoController::class, 'getByBarcode'])->name('toko.barcode');
+    Route::post('/cek',                 [KunjunganTokoController::class, 'cekKunjungan'])->name('cek');
     });
 });
 

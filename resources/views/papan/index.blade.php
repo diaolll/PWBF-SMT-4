@@ -172,7 +172,8 @@
                 if (lastDipanggil !== dipanggil.nomor) {
                     lastDipanggil = dipanggil.nomor;
                     playDingdong();
-                    setTimeout(() => speak(nomorStr, dipanggil.nama), 1000);
+                    // Tunggu 2 detik setelah dingdong, baru speak
+                    setTimeout(() => speak(nomorStr, dipanggil.nama), 2000);
                 }
             } else {
                 nomorDisplay.textContent = '---';

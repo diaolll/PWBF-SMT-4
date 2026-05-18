@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'id_google', // Tambahan
         'otp',       // Tambahan
+        'role',      // Antrian system
     ];
 
     /**
@@ -46,5 +47,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }

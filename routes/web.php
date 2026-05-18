@@ -138,3 +138,41 @@ Route::middleware(['auth'])->group(function () {
 // Callback Midtrans (di luar auth)
 Route::post('/midtrans/callback', [PaymentController::class, 'callback'])->name('midtrans.callback');
     Route::post('/pesanan/retry/{order_id}', [KantinController::class, 'retry']);
+
+/*
+|--------------------------------------------------------------------------
+| SISTEM ANTRIAN REAL-TIME (SSE)
+|--------------------------------------------------------------------------
+*/
+
+use App\Http\Controllers\AntrianGuestController;
+use App\Http\Controllers\AntrianPapanController;
+use App\Http\Controllers\AntrianAdminController;
+use App\Http\Controllers\AntrianSSEController;
+
+// Guest routes (public)
+Route::prefix('guest')->name('guest.')->group(function () {
+    Route::get('/', [AntrianGuestController::class, 'index'])->name('index');
+    Route::post('/daftar', [AntrianGuestController::class, 'daftar'])->name('daftar');
+    Route::get('/redirect/{nomor}/{nama}', [AntrianGuestController::class, 'redirectView'])->name('redirect');
+    Route::get('/tiket/{nomor}/{nama}', [AntrianGuestController::class, 'tiket'])->name('tiket');
+});
+
+// Papan antrian (public)
+Route::get('/papan', [AntrianPapanController::class, 'index'])->name('papan.index');
+
+// SSE endpoint (public)
+Route::get('/sse/antrian', [AntrianSSEController::class, 'stream'])->name('sse.antrian');
+
+// API polling endpoint (public) - lighter alternative to SSE
+Route::get('/api/antrian', [AntrianSSEController::class, 'poll'])->name('api.antrian');
+
+// Admin routes (auth + role:admin)
+Route::middleware(['auth', 'role:admin'])->prefix('antrian')->name('antrian.')->group(function () {
+    Route::get('/admin', [AntrianAdminController::class, 'index'])->name('admin');
+    Route::post('/tambah', [AntrianAdminController::class, 'tambah'])->name('tambah');
+    Route::post('/panggil', [AntrianAdminController::class, 'panggil'])->name('panggil');
+    Route::post('/terlambat/{id}', [AntrianAdminController::class, 'tandaiTerlambat'])->name('terlambat');
+    Route::post('/panggil-terlambat/{id}', [AntrianAdminController::class, 'panggilTerlambat'])->name('panggil-terlambat');
+    Route::post('/reset', [AntrianAdminController::class, 'reset'])->name('reset');
+});

@@ -396,6 +396,40 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                                <a class="nav-link" href="{{ url('kunjungan-toko') }}">
+                                    Kunjungan Toko
+                                </a>
+                            </li>
+
+                {{-- Modul 8 - Sistem Antrian --}}
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#ui-modul8"
+                       aria-expanded="false" aria-controls="ui-modul8">
+                        <span class="menu-title">Modul 8</span>
+                        <i class="menu-arrow"></i>
+                        <i class="mdi mdi-bell-ring menu-icon"></i>
+                    </a>
+                    <div class="collapse" id="ui-modul8">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/antrian/admin') }}" target="_blank">
+                                    Admin Antrian
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/guest') }}" target="_blank">
+                                    Ambil Tiket (Guest)
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/papan') }}" target="_blank">
+                                    Papan Antrian
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
             </ul>
         </nav>
@@ -501,6 +535,12 @@
 				// Modul 5
 				else if (currentPath.startsWith('/wilayah') || currentPath.startsWith('/pos')) {
 					$('#ui-modul5').addClass('show');
+				}
+
+				// Modul 8 - Sistem Antrian
+				else if (currentPath.startsWith('/antrian') || currentPath.startsWith('/guest') || currentPath.startsWith('/papan')) {
+					$('#ui-modul8').addClass('show');
+					$('.sidebar .nav-item').has('a[href*="/antrian"], a[href*="/guest"], a[href*="/papan"]').addClass('active');
 				}
 			});
 		</script>
